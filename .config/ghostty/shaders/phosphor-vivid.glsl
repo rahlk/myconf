@@ -40,8 +40,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // Keep faint green edges dark so bold bitmap glyphs retain their gaps.
     // Bright cores keep their phosphor glow without flattening the highlights.
     float exponent = green ? 0.95 : 0.60;
-    // Leave brightness headroom for bold while keeping a single green hue.
-    float gain = green ? mix(0.80, 1.03, boldEmphasis) : 1.15;
+    // Lift normal green text while keeping brighter emphasis for bold.
+    float gain = green ? mix(0.96, 1.12, boldEmphasis) : 1.15;
     intensity = min(1.0, pow(intensity, exponent) * gain);
     fragColor.rgb = background + (vec3(1.0) - background) * phosphor * intensity;
 }

@@ -23,7 +23,7 @@ custom-shader = shaders/glitch-timed-color.glsl
 # Flat CRT screen and scan lines, without text bloom.
 custom-shader = shaders/crt-no-bloom.glsl
 # Bright monochrome text for the green and Ubuntu profiles.
-custom-shader = shaders/phosphor-shared.glsl
+custom-shader = shaders/phosphor-vivid.glsl
 custom-shader = shaders/crt-finish-shared.glsl
 custom-shader-animation = true
 

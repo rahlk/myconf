@@ -6,7 +6,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 
 - Local Ghostty follows the system appearance: Retro Paper in light mode and Retro Green in dark mode.
 - Retro Paper uses black text on a pale paper background (`#FAF9F6`).
-- Retro Green uses bright green text on an almost-black green background.
+- Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
 - The Ubuntu theme remains available as an optional orange palette.
 - Local font: PxPlus IBM VGA 8x16 at size 18, with Maple Mono NF for Nerd Font symbols.
@@ -34,7 +34,7 @@ Only the five active shaders are included, with stable filenames. Ghostty runs t
 1. `block-cursor-halo.glsl`
 2. `glitch-timed-color.glsl`
 3. `crt-no-bloom.glsl`
-4. `phosphor-shared.glsl`
+4. `phosphor-vivid.glsl`
 5. `crt-finish-shared.glsl`
 
 ## Restore on macOS

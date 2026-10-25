@@ -1,6 +1,6 @@
 # Green phosphor terminal palette.
 background = #010402
-foreground = #6dff80
+foreground = #39ff6a
 # Use brightness for bold emphasis without thickening the bitmap glyphs.
 bold-color = #d1ffda
 font-style-bold = false
@@ -20,7 +20,7 @@ palette = 6=#4dd99a
 palette = 7=#97dfa3
 palette = 8=#346640
 palette = 9=#63bd73
-palette = 10=#6dff80
+palette = 10=#39ff6a
 palette = 11=#bdff8c
 palette = 12=#61c78f
 palette = 13=#9be0aa
