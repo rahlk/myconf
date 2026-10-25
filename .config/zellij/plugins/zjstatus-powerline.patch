@@ -1,0 +1,324 @@
+diff --git a/src/widgets/tabs.rs b/src/widgets/tabs.rs
+index b62f581..e6143ed 100644
+--- a/src/widgets/tabs.rs
++++ b/src/widgets/tabs.rs
+@@ -1,5 +1,6 @@
+ use std::{cmp, collections::BTreeMap};
+ 
++use anstyle::Color;
+ use zellij_tile::{
+     prelude::{InputMode, ModeInfo, PaneInfo, PaneManifest, TabInfo},
+     shim::switch_tab_to,
+@@ -29,6 +30,8 @@ pub struct TabsWidget {
+     tab_truncate_start_format: Vec<FormattedPart>,
+     tab_truncate_end_format: Vec<FormattedPart>,
+     tab_zero_based_index: bool,
++    tab_powerline: bool,
++    powerline_background: Option<Color>,
+ }
+ 
+ impl TabsWidget {
+@@ -100,6 +103,15 @@ impl TabsWidget {
+             .get("tab_separator")
+             .map(|s| FormattedPart::from_format_string(s, config));
+ 
++        let tab_powerline = config
++            .get("tab_powerline")
++            .is_some_and(|value| value == "true");
++        let powerline_background = config
++            .get("tab_powerline_bg")
++            .map(|background| format!("#[bg={background}]"))
++            .or_else(|| config.get("format_space").cloned())
++            .and_then(|format| FormattedPart::from_format_string(&format, config).bg);
++
+         let bell_indicator = config.get("tab_bell_indicator").cloned();
+         let flashing_bell_indicator = config
+             .get("tab_flashing_bell_indicator")
+@@ -126,6 +138,8 @@ impl TabsWidget {
+             tab_truncate_start_format,
+             tab_truncate_end_format,
+             tab_zero_based_index,
++            tab_powerline,
++            powerline_background,
+         }
+     }
+ }
+@@ -133,7 +147,6 @@ impl TabsWidget {
+ impl Widget for TabsWidget {
+     fn process(&self, _name: &str, state: &ZellijState) -> String {
+         let mut output = "".to_owned();
+-        let mut counter = 0;
+ 
+         let (truncated_start, truncated_end, tabs) =
+             get_tab_window(&state.tabs, self.tab_display_count);
+@@ -150,17 +163,8 @@ impl Widget for TabsWidget {
+             }
+         }
+ 
+-        for tab in &tabs {
+-            let content = self.render_tab(tab, &state.panes, &state.mode);
+-            counter += 1;
+-
+-            output = format!("{}{}", output, content);
+-
+-            if counter < tabs.len()
+-                && let Some(sep) = &self.separator
+-            {
+-                output = format!("{}{}", output, sep.format_string(&sep.content));
+-            }
++        for (index, tab) in tabs.iter().enumerate() {
++            output.push_str(&self.render_tab_segment(tab, tabs.get(index + 1), state));
+         }
+ 
+         if truncated_end > 0 {
+@@ -180,7 +184,6 @@ impl Widget for TabsWidget {
+ 
+     fn process_click(&self, _name: &str, state: &ZellijState, pos: usize) {
+         let mut offset = 0;
+-        let mut counter = 0;
+ 
+         let (truncated_start, truncated_end, tabs) =
+             get_tab_window(&state.tabs, self.tab_display_count);
+@@ -209,28 +212,12 @@ impl Widget for TabsWidget {
+             }
+         }
+ 
+-        for tab in &tabs {
+-            counter += 1;
+-
+-            let mut rendered_content = self.render_tab(tab, &state.panes, &state.mode);
+-
+-            if counter < tabs.len()
+-                && let Some(sep) = &self.separator
+-            {
+-                rendered_content =
+-                    format!("{}{}", rendered_content, sep.format_string(&sep.content));
+-            }
+-
+-            let content_len = console::measure_text_width(&rendered_content);
+-
+-            if pos > offset && pos < offset + content_len {
+-                switch_tab_to(tab.position as u32 + 1);
+-
+-                break;
+-            }
+-
+-            offset += content_len;
++        let (target, next_offset) = self.tab_click_target(&tabs, state, pos, offset);
++        if let Some(target) = target {
++            switch_tab_to(target as u32);
++            return;
+         }
++        offset = next_offset;
+ 
+         if truncated_end > 0 {
+             for f in &self.tab_truncate_end_format {
+@@ -251,6 +238,70 @@ impl Widget for TabsWidget {
+ }
+ 
+ impl TabsWidget {
++    fn render_tab_segment(
++        &self,
++        tab: &TabInfo,
++        next_tab: Option<&TabInfo>,
++        state: &ZellijState,
++    ) -> String {
++        let mut output = self.render_tab(tab, &state.panes, &state.mode);
++        if self.tab_powerline {
++            let current_edge = self
++                .select_format(tab, &state.mode)
++                .iter()
++                .rev()
++                .find(|part| !part.content.is_empty());
++            let current_background = current_edge.and_then(|part| part.bg);
++            let next_background = next_tab.map_or(self.powerline_background, |next| {
++                self.select_format(next, &state.mode)
++                    .iter()
++                    .find(|part| !part.content.is_empty())
++                    .and_then(|part| part.bg)
++            });
++            let shared_background = next_tab.is_some()
++                && current_background.is_some()
++                && current_background == next_background;
++            let arrow = FormattedPart {
++                fg: if shared_background {
++                    current_edge.and_then(|part| part.fg)
++                } else {
++                    current_background
++                },
++                bg: next_background,
++                ..FormattedPart::default()
++            };
++            output.push_str(&arrow.format_string(if shared_background { "" } else { "" }));
++        } else if next_tab.is_some()
++            && let Some(separator) = &self.separator
++        {
++            output.push_str(&separator.format_string(&separator.content));
++        }
++        output
++    }
++
++    fn tab_click_target(
++        &self,
++        tabs: &[TabInfo],
++        state: &ZellijState,
++        pos: usize,
++        mut offset: usize,
++    ) -> (Option<usize>, usize) {
++        for (index, tab) in tabs.iter().enumerate() {
++            let content = self.render_tab_segment(tab, tabs.get(index + 1), state);
++            let content_len = console::measure_text_width(&content);
++            let after_start = if self.tab_powerline {
++                pos >= offset
++            } else {
++                pos > offset
++            };
++            if after_start && pos < offset + content_len {
++                return (Some(tab.position + 1), offset + content_len);
++            }
++            offset += content_len;
++        }
++        (None, offset)
++    }
++
+     fn select_format(&self, info: &TabInfo, mode: &ModeInfo) -> &Vec<FormattedPart> {
+         if info.active && mode.mode == InputMode::RenameTab {
+             return &self.rename_tab_format;
+@@ -460,11 +511,136 @@ pub fn get_tab_window(
+ 
+ #[cfg(test)]
+ mod test {
++    use std::collections::BTreeMap;
++
+     use zellij_tile::prelude::TabInfo;
+ 
+-    use super::get_tab_window;
++    use super::{TabsWidget, get_tab_window};
++    use crate::{config::ZellijState, widgets::widget::Widget};
+     use rstest::rstest;
+ 
++    fn powerline_config() -> BTreeMap<String, String> {
++        BTreeMap::from([
++            ("tab_powerline".to_owned(), "true".to_owned()),
++            (
++                "tab_normal".to_owned(),
++                "#[fg=white,bg=#585858] {name} ".to_owned(),
++            ),
++            (
++                "tab_active".to_owned(),
++                "#[fg=black,bg=#39ff6a] {name} ".to_owned(),
++            ),
++            ("tab_separator".to_owned(), " | ".to_owned()),
++            ("format_space".to_owned(), "#[bg=#303030]".to_owned()),
++        ])
++    }
++
++    fn tab_state(names: &[&str], active: usize) -> ZellijState {
++        ZellijState {
++            tabs: names
++                .iter()
++                .enumerate()
++                .map(|(position, name)| TabInfo {
++                    position,
++                    name: (*name).to_owned(),
++                    active: position == active,
++                    ..TabInfo::default()
++                })
++                .collect(),
++            ..ZellijState::default()
++        }
++    }
++
++    #[test]
++    fn powerline_connects_normal_background_to_active_background() {
++        let widget = TabsWidget::new(&powerline_config());
++        let output = widget.process("tabs", &tab_state(&["one", "two"], 1));
++
++        assert!(
++            output.contains("\u{1b}[38;2;88;88;88m\u{1b}[48;2;57;255;106m"),
++            "{output:?}"
++        );
++    }
++
++    #[test]
++    fn powerline_connects_active_background_to_normal_background() {
++        let widget = TabsWidget::new(&powerline_config());
++        let output = widget.process("tabs", &tab_state(&["one", "two"], 0));
++
++        assert!(
++            output.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;88;88;88m"),
++            "{output:?}"
++        );
++    }
++
++    #[test]
++    fn powerline_equal_backgrounds_use_visible_thin_chevron_with_one_column_click_width() {
++        let widget = TabsWidget::new(&powerline_config());
++        let state = tab_state(&["界", "two", "three"], 2);
++        let output = widget.process("tabs", &state);
++
++        assert!(
++            output.contains("\u{1b}[37m\u{1b}[48;2;88;88;88m"),
++            "{output:?}"
++        );
++        assert_eq!(console::strip_ansi_codes(&output), " 界  two  three ");
++        assert_eq!(console::measure_text_width(&output), 19);
++        assert_eq!(
++            widget.tab_click_target(&state.tabs, &state, 11, 7).0,
++            Some(1)
++        );
++        assert_eq!(
++            widget.tab_click_target(&state.tabs, &state, 12, 7).0,
++            Some(2)
++        );
++    }
++
++    #[test]
++    fn powerline_last_tab_connects_to_filler_without_legacy_separator() {
++        let widget = TabsWidget::new(&powerline_config());
++        let output = widget.process("tabs", &tab_state(&["one", "two"], 0));
++
++        assert!(
++            output.contains("\u{1b}[38;2;88;88;88m\u{1b}[48;2;48;48;48m"),
++            "{output:?}"
++        );
++        assert_eq!(console::strip_ansi_codes(&output), " one  two ");
++        assert_eq!(console::measure_text_width(&output), 12);
++    }
++
++    #[test]
++    fn powerline_disabled_preserves_existing_separator_output() {
++        let mut config = powerline_config();
++        config.remove("tab_powerline");
++        let widget = TabsWidget::new(&config);
++        let output = widget.process("tabs", &tab_state(&["one", "two"], 0));
++
++        assert_eq!(console::strip_ansi_codes(&output), " one  |  two ");
++        assert!(!output.contains(''));
++    }
++
++    #[test]
++    fn powerline_click_targets_include_arrow_and_unicode_display_width() {
++        let widget = TabsWidget::new(&powerline_config());
++        let state = tab_state(&["界", "two"], 0);
++
++        // With a seven-column prefix, the first body is columns 7..=10,
++        // its arrow is column 11, and the second body begins at column 12.
++        for (column, expected) in [
++            (7, Some(1)),
++            (11, Some(1)),
++            (12, Some(2)),
++            (17, Some(2)),
++            (18, None),
++        ] {
++            assert_eq!(
++                widget.tab_click_target(&state.tabs, &state, column, 7).0,
++                expected,
++                "column {column}"
++            );
++        }
++    }
++
+     #[rstest]
+     #[case(
+         vec![

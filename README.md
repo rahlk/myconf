@@ -18,7 +18,8 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
 - One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
-- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The tab bar uses a uniform Windows teal (`#008080`) background with white labels, Powerline arrows, and a clock.
+- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The Powerline bar shows the session in green on black, gray tabs, a bright green active tab, then time and date on the right.
+The session ends square. Tab arrows join directly to the next segment without background gaps.
 
 ## Files
 
@@ -66,6 +67,15 @@ The local files contain personal paths under `/Users/rkrsn` and the `stagger-jui
 Reload Ghostty after applying the files.
 For later shader edits, change the configured shader filename to force a rebuild in Ghostty 1.3.1.
 A reload with the same filename can reuse a cached shader build.
+
+## Rebuild the tab bar plugin
+
+The included zjstatus plugin adds `tab_powerline` for direct color transitions between adjacent tabs.
+It uses [upstream 0.25.0 at commit 7e6dbfd](https://github.com/dj95/zjstatus/tree/7e6dbfd43a1c7431f3969d9a565bcd6d5bbdce45), with `.config/zellij/plugins/zjstatus-powerline.patch`.
+
+Run `bash macos/build-zjstatus.sh` to rebuild the included plugin.
+The script installs Rust 1.95.0 with the WASI target and builds from the pinned source and dependency lockfile.
+It writes `.config/zellij/plugins/zjstatus.wasm`.
 
 ## Restore on the Ubuntu host
 
