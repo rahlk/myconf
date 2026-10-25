@@ -1,17 +1,17 @@
-# Black ink on pale yellow paper, matching the Retro Green CRT setup.
-background = #faf7ed
+# Black ink on subtly warm white paper, matching the Retro Green CRT setup.
+background = #faf9f6
 foreground = #171717
 # Darker ink provides bold emphasis without thickening the bitmap glyphs.
 bold-color = #000000
 font-style-bold = false
 font-style-bold-italic = false
 cursor-color = #171717
-cursor-text = #faf7ed
+cursor-text = #faf9f6
 selection-background = #d4d2ca
 selection-foreground = #000000
 
 # ANSI black is the paper surface; bright black is the muted Powerline fill.
-palette = 0=#faf7ed
+palette = 0=#faf9f6
 palette = 1=#646464
 palette = 2=#2d2d2d
 palette = 3=#3b3b3b

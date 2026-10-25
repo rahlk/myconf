@@ -5,7 +5,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 ## Terminal appearance
 
 - Local Ghostty follows the system appearance: Retro Paper in light mode and Retro Green in dark mode.
-- Retro Paper uses black text on a pale paper background (`#FAF7ED`).
+- Retro Paper uses black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses bright green text on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
 - The Ubuntu theme remains available as an optional orange palette.

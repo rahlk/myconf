@@ -3,7 +3,7 @@ themes {
     retro-paper {
         text_unselected {
             base 23 23 23
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 36 36 36
             emphasis_2 56 56 56
@@ -18,16 +18,16 @@ themes {
             emphasis_3 47 47 47
         }
         ribbon_selected {
-            base 250 247 237
+            base 250 249 246
             background 23 23 23
             emphasis_0 212 210 202
             emphasis_1 232 230 223
             emphasis_2 212 210 202
-            emphasis_3 250 247 237
+            emphasis_3 250 249 246
         }
         ribbon_unselected {
             base 56 56 56
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 0 0 0
             emphasis_2 69 69 69
@@ -35,7 +35,7 @@ themes {
         }
         table_title {
             base 36 36 36
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 36 36 36
             emphasis_2 56 56 56
@@ -51,7 +51,7 @@ themes {
         }
         table_cell_unselected {
             base 23 23 23
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 36 36 36
             emphasis_2 56 56 56
@@ -67,7 +67,7 @@ themes {
         }
         list_unselected {
             base 23 23 23
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 36 36 36
             emphasis_2 56 56 56
@@ -75,7 +75,7 @@ themes {
         }
         frame_unselected {
             base 148 148 148
-            background 250 247 237
+            background 250 249 246
             emphasis_0 148 148 148
             emphasis_1 148 148 148
             emphasis_2 148 148 148
@@ -83,7 +83,7 @@ themes {
         }
         frame_selected {
             base 23 23 23
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 36 36 36
             emphasis_2 47 47 47
@@ -91,7 +91,7 @@ themes {
         }
         frame_highlight {
             base 15 15 15
-            background 250 247 237
+            background 250 249 246
             emphasis_0 47 47 47
             emphasis_1 15 15 15
             emphasis_2 15 15 15
@@ -99,15 +99,15 @@ themes {
         }
         exit_code_success {
             base 45 45 45
-            background 250 247 237
+            background 250 249 246
             emphasis_0 36 36 36
-            emphasis_1 250 247 237
+            emphasis_1 250 249 246
             emphasis_2 47 47 47
             emphasis_3 69 69 69
         }
         exit_code_error {
             base 15 15 15
-            background 250 247 237
+            background 250 249 246
             emphasis_0 15 15 15
             emphasis_1 0 0 0
             emphasis_2 0 0 0
