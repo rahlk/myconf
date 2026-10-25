@@ -1,6 +1,6 @@
 // Background glow, scanlines, and vignette for green/red/blue CRT themes.
 #define VIGNETTE_STRENGTH 0.10
-#define BLUE_VIGNETTE_STRENGTH 0.165
+#define WHITE_TEXT_GAIN 2.0
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor = texture(iChannel0, fragCoord / iResolution.xy);
@@ -31,25 +31,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         backgroundLuminance < 0.5 &&
         min(iForegroundColor.r, min(iForegroundColor.g, iForegroundColor.b)) > 0.7;
     // Select white letter cores before scanlines and vignette dim them.
-    float whiteCore = smoothstep(0.45, 0.75,
+    float whiteCore = smoothstep(0.67, 0.70,
         min(fragColor.r, min(fragColor.g, fragColor.b)));
-    if (whiteOnBlue) {
-        // Curvature disabled; retain the original curved glow bounds.
-        // float aspect = iResolution.x / iResolution.y;
-        // vec2 tubePosition = position * vec2(1.0 + position.y * position.y / (50.0 * aspect),
-        //                                    1.0 + position.x * position.x / 50.0);
-        vec2 tubePosition = position;
-        if (all(lessThanEqual(abs(tubePosition), vec2(1.0)))) {
-            float glowRadius = 1.3;
-            float radialGlow = exp(-2.3 * dot(position, position) / (glowRadius * glowRadius));
-            // Red/green contrast keeps the blue shadow mask from suppressing glow.
-            vec3 difference = abs(fragColor.rgb - iBackgroundColor);
-            float contrast = max(difference.r, difference.g);
-            float backgroundWeight = 1.0 - smoothstep(0.025, 0.20, contrast);
-            vec3 centerGlow = iBackgroundColor / max(backgroundPeak, 0.001) * (27.04 / 255.0);
-            fragColor.rgb += centerGlow * radialGlow * backgroundWeight;
-        }
-    }
     if (backgroundLuminance < 0.5) {
         // Curved scanlines disabled; retain the original mapping.
         // float curvedY = position.y * (1.0 + position.x * position.x / 50.0);
@@ -58,12 +41,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         fragColor.rgb *= 0.86 + 0.14 * cos(6.28318530718 * scanY / 4.0);
     }
     float distanceFromCenter = dot(position, position) * 0.5;
-    float vignetteStrength = whiteOnBlue ? BLUE_VIGNETTE_STRENGTH : VIGNETTE_STRENGTH;
-    fragColor.rgb *= 1.0 - vignetteStrength * smoothstep(0.12, 1.0, distanceFromCenter);
+    fragColor.rgb *= 1.0 - VIGNETTE_STRENGTH * smoothstep(0.12, 1.0, distanceFromCenter);
     if (whiteOnBlue) {
-        // Lift white highlights without clipping away the CRT modulation.
+        // Double white text after CRT attenuation, capped at display white.
         vec3 color = clamp(fragColor.rgb, 0.0, 1.0);
-        vec3 brightWhite = vec3(1.0) - pow(vec3(1.0) - color, vec3(4.0));
+        vec3 brightWhite = min(vec3(1.0), color * WHITE_TEXT_GAIN);
         fragColor.rgb = mix(color, brightWhite, whiteCore);
     }
 }

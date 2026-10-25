@@ -5,8 +5,8 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 ## Terminal appearance
 
 - Local Ghostty follows the system appearance: CRT Blue in light mode and Retro Green in dark mode.
-- CRT Blue uses the standard 16-color DOS palette, with a blue background (`#0000AA`) and light gray text (`#AAAAAA`).
-- The DOS appearance includes gray menus and borders, with red, yellow, and cyan ANSI accents.
+- CRT Blue uses DOS colors with a blue background (`#0000AA`) and bright white text (`#FFFFFF`).
+- The DOS appearance includes gray menus and white borders, with red, yellow, and cyan ANSI accents.
 - Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
@@ -14,11 +14,11 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Local font: PxPlus IBM VGA 8x16 at size 18, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
 - Flat CRT screen, scan lines, background glow, and no text bloom.
-- Vignette strength: `0.10` for the general finish and `0.165` for white text on blue.
+- Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
 - Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
 - One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
-- The light Zellij theme uses DOS blue and gray, with yellow for selected elements. A date and clock appear beside the tabs.
+- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The tab bar uses a uniform Windows teal (`#008080`) background with white labels and a clock.
 
 ## Files
 
@@ -38,7 +38,7 @@ Only the five active shaders are included, with stable filenames. Ghostty runs t
 2. `glitch-timed-color.glsl`
 3. `crt-no-bloom.glsl`
 4. `phosphor-vivid.glsl`
-5. `crt-finish-shared.glsl`
+5. `crt-finish.glsl`
 
 ## Restore on macOS
 

@@ -1,4 +1,4 @@
-// Theme-colored top tabs with the system date and time, no status bar.
+// Windows teal top tabs with white labels and the system date and time.
 layout {
     default_tab_template {
         pane size=1 borderless=true {
@@ -6,17 +6,17 @@ layout {
                 format_left "{tabs}"
                 format_center ""
                 format_right "{command_clock}"
-                format_space "#[bg=black]"
+                format_space "#[bg=#008080]"
 
                 border_enabled "false"
                 hide_frame_for_single_pane "false"
 
-                tab_normal "#[fg=bright_black]#[bg=bright_black] {index} {name} #[fg=bright_black]"
-                tab_active "#[fg=default]#[reverse] {index} {name} #[fg=default]"
-                tab_separator "#[bg=black] "
+                tab_normal "#[bg=#008080] {index} {name} "
+                tab_active "#[bg=#008080] [{index} {name}] "
+                tab_separator "#[bg=#008080] "
 
                 command_clock_command "/usr/bin/env LC_TIME=C /bin/date '+%m/%d/%Y %H:%M %Z'"
-                command_clock_format "#[fg=bright_black]#[bg=bright_black] {stdout} #[fg=bright_black]"
+                command_clock_format "#[bg=#008080] {stdout} "
                 command_clock_interval "5"
                 command_clock_rendermode "static"
             }
