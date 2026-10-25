@@ -4,9 +4,12 @@ layout {
         pane size=1 borderless=true {
             plugin location="file:/Users/rkrsn/.config/zellij/plugins/zjstatus.wasm" {
                 format_left "#[fg=#39ff6a,bg=#000000,bold] {session} {tabs}"
+                format_left_blue "#[fg=#ffffff,bg=#008080,bold] {session} {tabs}"
                 format_center ""
-                format_right "{command_time}{command_date}"
+                format_right "#[fg=#585858,bg=#303030]{command_time}{command_date}"
+                format_right_blue "#[fg=#585858,bg=#008080]{command_time}{command_date}"
                 format_space "#[bg=#303030]"
+                format_space_blue "#[bg=#008080]"
                 border_enabled "false"
                 hide_frame_for_single_pane "false"
                 tab_normal "#[fg=#ffffff,bg=#585858,bold] {name} "
@@ -14,7 +17,7 @@ layout {
                 tab_separator ""
                 tab_powerline "true"
                 command_time_command "/usr/bin/env LC_TIME=C /bin/date '+%H:%M %Z'"
-                command_time_format "#[fg=#585858,bg=#303030]#[fg=#ff8700,bg=#585858,bold] {stdout} "
+                command_time_format "#[fg=#ff8700,bg=#585858,bold] {stdout} "
                 command_time_interval "5"
                 command_time_rendermode "static"
                 command_date_command "/usr/bin/env LC_TIME=C /bin/date '+%m/%d/%Y'"

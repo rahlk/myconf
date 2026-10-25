@@ -18,7 +18,8 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
 - One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
-- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The Powerline bar shows the session in green on black, gray tabs, a bright green active tab, then time and date on the right.
+- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The green Powerline bar shows the session in green on black, gray tabs, a bright green active tab, then time and date.
+With CRT Blue, the session uses white text on teal, and the empty bar background is teal.
 The session ends square. Tab arrows join directly to the next segment without background gaps.
 
 ## Files
@@ -71,6 +72,7 @@ A reload with the same filename can reuse a cached shader build.
 ## Rebuild the tab bar plugin
 
 The included zjstatus plugin adds `tab_powerline` for direct color transitions between adjacent tabs.
+The optional `format_left_blue`, `format_right_blue`, and `format_space_blue` keys select the DOS-blue variants from the Zellij theme.
 It uses [upstream 0.25.0 at commit 7e6dbfd](https://github.com/dj95/zjstatus/tree/7e6dbfd43a1c7431f3969d9a565bcd6d5bbdce45), with `.config/zellij/plugins/zjstatus-powerline.patch`.
 
 Run `bash macos/build-zjstatus.sh` to rebuild the included plugin.

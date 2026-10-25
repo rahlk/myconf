@@ -1,24 +1,272 @@
+diff --git a/src/config.rs b/src/config.rs
+index 4b4dbc1..eb64a92 100644
+--- a/src/config.rs
++++ b/src/config.rs
+@@ -28,6 +28,13 @@ pub struct ZellijState {
+     pub focused_pane_cwd: Option<std::path::PathBuf>,
+ }
+ 
++pub fn is_blue_theme(state: &ZellijState) -> bool {
++    matches!(
++        state.mode.style.colors.text_unselected.background,
++        PaletteColor::Rgb((red, green, blue)) if blue > red && blue > green
++    )
++}
++
+ #[derive(Clone, Debug, Ord, Eq, PartialEq, PartialOrd, Copy)]
+ pub enum Part {
+     Left,
+@@ -80,6 +87,10 @@ pub struct ModuleConfig {
+     pub right_parts_config: String,
+     pub right_parts: Vec<FormattedPart>,
+     pub format_space: FormattedPart,
++    left_parts_blue: Option<(String, Vec<FormattedPart>)>,
++    right_parts_blue: Option<(String, Vec<FormattedPart>)>,
++    format_space_blue: Option<FormattedPart>,
++    blue_theme_active: bool,
+     pub hide_frame_for_single_pane: bool,
+     pub hide_frame_except_for_search: bool,
+     pub hide_frame_except_for_fullscreen: bool,
+@@ -166,6 +177,16 @@ impl ModuleConfig {
+             right_parts_config: right_parts_config.to_owned(),
+             right_parts: parts_from_config(Some(&right_parts_config.to_owned()), config),
+             format_space: FormattedPart::from_format_string(format_space_config, config),
++            left_parts_blue: config
++                .get("format_left_blue")
++                .map(|format| (format.clone(), parts_from_config(Some(format), config))),
++            right_parts_blue: config
++                .get("format_right_blue")
++                .map(|format| (format.clone(), parts_from_config(Some(format), config))),
++            format_space_blue: config
++                .get("format_space_blue")
++                .map(|format| FormattedPart::from_format_string(format, config)),
++            blue_theme_active: false,
+             hide_frame_for_single_pane,
+             hide_frame_except_for_search,
+             hide_frame_except_for_fullscreen,
+@@ -177,12 +198,42 @@ impl ModuleConfig {
+         })
+     }
+ 
++    fn select_theme(&mut self, state: &ZellijState) {
++        let blue = is_blue_theme(state);
++        if blue == self.blue_theme_active {
++            return;
++        }
++        // Alternate values retain the inactive profile while the active fields render and hit-test.
++        if let Some((config, parts)) = &mut self.left_parts_blue {
++            std::mem::swap(&mut self.left_parts_config, config);
++            std::mem::swap(&mut self.left_parts, parts);
++        }
++        if let Some((config, parts)) = &mut self.right_parts_blue {
++            std::mem::swap(&mut self.right_parts_config, config);
++            std::mem::swap(&mut self.right_parts, parts);
++        }
++        if let Some(space) = &mut self.format_space_blue {
++            std::mem::swap(&mut self.format_space, space);
++        }
++        for part in self
++            .left_parts
++            .iter_mut()
++            .chain(&mut self.center_parts)
++            .chain(&mut self.right_parts)
++        {
++            part.cache.clear();
++            part.cached_content.clear();
++        }
++        self.blue_theme_active = blue;
++    }
++
+     pub fn handle_mouse_action(
+         &mut self,
+         state: ZellijState,
+         mouse: Mouse,
+         widget_map: BTreeMap<String, Arc<dyn Widget>>,
+     ) {
++        self.select_theme(&state);
+         let click_pos = match mouse {
+             Mouse::ScrollUp(_) => return,
+             Mouse::ScrollDown(_) => return,
+@@ -339,6 +390,7 @@ impl ModuleConfig {
+         state: ZellijState,
+         widget_map: BTreeMap<String, Arc<dyn Widget>>,
+     ) -> String {
++        self.select_theme(&state);
+         if self.left_parts.is_empty() && self.center_parts.is_empty() && self.right_parts.is_empty()
+         {
+             return "No configuration found. See https://github.com/dj95/zjstatus/wiki/3-%E2%80%90-Configuration for more info".to_string();
+@@ -538,8 +590,139 @@ fn parts_from_config(
+ #[cfg(test)]
+ mod test {
+     use super::*;
++    use crate::widgets::{session::SessionWidget, tabs::TabsWidget};
+     use anstyle::{Effects, RgbColor};
+ 
++    fn profile_config() -> BTreeMap<String, String> {
++        BTreeMap::from([
++            (
++                "format_left".to_owned(),
++                "#[fg=#39ff6a,bg=#000000] {session} ".to_owned(),
++            ),
++            (
++                "format_left_blue".to_owned(),
++                "#[fg=#ffffff,bg=#008080] {session} ".to_owned(),
++            ),
++            ("format_center".to_owned(), "{tabs}".to_owned()),
++            (
++                "format_right".to_owned(),
++                "#[fg=#585858,bg=#303030]#[fg=#ff8700,bg=#585858]T".to_owned(),
++            ),
++            (
++                "format_right_blue".to_owned(),
++                "#[fg=#585858,bg=#008080]#[fg=#ff8700,bg=#585858]T".to_owned(),
++            ),
++            ("format_space".to_owned(), "#[bg=#303030]".to_owned()),
++            ("format_space_blue".to_owned(), "#[bg=#008080]".to_owned()),
++            ("tab_powerline".to_owned(), "true".to_owned()),
++            (
++                "tab_active".to_owned(),
++                "#[fg=black,bg=#39ff6a] {name} ".to_owned(),
++            ),
++        ])
++    }
++
++    fn profile_widgets(config: &BTreeMap<String, String>) -> BTreeMap<String, Arc<dyn Widget>> {
++        BTreeMap::from([
++            (
++                "session".to_owned(),
++                Arc::new(SessionWidget::new(config)) as Arc<dyn Widget>,
++            ),
++            (
++                "tabs".to_owned(),
++                Arc::new(TabsWidget::new(config)) as Arc<dyn Widget>,
++            ),
++        ])
++    }
++
++    #[test]
++    fn blue_format_overrides_switch_and_restore_with_fresh_widget_content() {
++        let config = profile_config();
++        let widgets = profile_widgets(&config);
++        let mut module = ModuleConfig::new(&config).unwrap();
++        let mut state = ZellijState {
++            cols: 40,
++            ..ZellijState::default()
++        };
++        state.mode.style.colors.text_unselected.background = PaletteColor::Rgb((1, 4, 2));
++        state.mode.session_name = Some("main".to_owned());
++        state.tabs = vec![TabInfo {
++            active: true,
++            name: "one".to_owned(),
++            ..TabInfo::default()
++        }];
++        let green = module.render_bar(state.clone(), widgets.clone());
++        assert!(
++            green.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;0;0;0m main "),
++            "{green:?}"
++        );
++        assert!(
++            green.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;48;48;48m"),
++            "{green:?}"
++        );
++
++        // Cached session and center-tab values must refresh even with a zero event mask.
++        state.mode.style.colors.text_unselected.background = PaletteColor::Rgb((0, 0, 170));
++        state.mode.session_name = Some("blue".to_owned());
++        state.tabs[0].name = "two".to_owned();
++        let blue = module.render_bar(state.clone(), widgets.clone());
++        assert!(
++            blue.contains("\u{1b}[38;2;255;255;255m\u{1b}[48;2;0;128;128m blue "),
++            "{blue:?}"
++        );
++        assert!(
++            blue.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;0;128;128m"),
++            "{blue:?}"
++        );
++        assert!(
++            blue.contains("\u{1b}[38;2;88;88;88m\u{1b}[48;2;0;128;128m"),
++            "{blue:?}"
++        );
++        assert!(console::strip_ansi_codes(&blue).contains("two"));
++        assert!(!console::strip_ansi_codes(&blue).contains("main"));
++
++        state.mode.style.colors.text_unselected.background = PaletteColor::Rgb((1, 4, 2));
++        state.mode.session_name = Some("again".to_owned());
++        state.tabs[0].name = "three".to_owned();
++        let restored = module.render_bar(state, widgets);
++        assert!(
++            restored.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;0;0;0m again "),
++            "{restored:?}"
++        );
++        assert!(
++            restored.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;48;48;48m"),
++            "{restored:?}"
++        );
++        assert!(console::strip_ansi_codes(&restored).contains("three"));
++        assert!(!restored.contains("\u{1b}[48;2;0;128;128m"));
++    }
++
++    #[test]
++    fn missing_blue_overrides_preserve_base_output_in_all_profiles() {
++        let mut config = profile_config();
++        for key in ["format_left_blue", "format_right_blue", "format_space_blue"] {
++            config.remove(key);
++        }
++        let widgets = profile_widgets(&config);
++        let mut module = ModuleConfig::new(&config).unwrap();
++        let mut state = ZellijState {
++            cols: 40,
++            ..ZellijState::default()
++        };
++        state.mode.session_name = Some("main".to_owned());
++        state.tabs = vec![TabInfo {
++            active: true,
++            name: "one".to_owned(),
++            ..TabInfo::default()
++        }];
++        state.mode.style.colors.text_unselected.background = PaletteColor::Rgb((1, 4, 2));
++        let expected = module.render_bar(state.clone(), widgets.clone());
++        state.mode.style.colors.text_unselected.background = PaletteColor::Rgb((0, 0, 170));
++        assert_eq!(module.render_bar(state.clone(), widgets.clone()), expected);
++        state.mode.style.colors.text_unselected.background = PaletteColor::Rgb((1, 4, 2));
++        assert_eq!(module.render_bar(state, widgets), expected);
++    }
++
+     #[test]
+     fn test_formatted_part_from_string() {
+         let input = "#[fg=#ff0000,bg=#00ff00,bold,italic]foo";
 diff --git a/src/widgets/tabs.rs b/src/widgets/tabs.rs
-index b62f581..e6143ed 100644
+index b62f581..7355d10 100644
 --- a/src/widgets/tabs.rs
 +++ b/src/widgets/tabs.rs
-@@ -1,5 +1,6 @@
+@@ -1,11 +1,15 @@
  use std::{cmp, collections::BTreeMap};
  
 +use anstyle::Color;
  use zellij_tile::{
      prelude::{InputMode, ModeInfo, PaneInfo, PaneManifest, TabInfo},
      shim::switch_tab_to,
-@@ -29,6 +30,8 @@ pub struct TabsWidget {
+ };
+ 
+-use crate::{config::ZellijState, render::FormattedPart};
++use crate::{
++    config::{ZellijState, is_blue_theme},
++    render::FormattedPart,
++};
+ 
+ use super::widget::Widget;
+ 
+@@ -29,6 +33,9 @@ pub struct TabsWidget {
      tab_truncate_start_format: Vec<FormattedPart>,
      tab_truncate_end_format: Vec<FormattedPart>,
      tab_zero_based_index: bool,
 +    tab_powerline: bool,
 +    powerline_background: Option<Color>,
++    powerline_background_blue: Option<Option<Color>>,
  }
  
  impl TabsWidget {
-@@ -100,6 +103,15 @@ impl TabsWidget {
+@@ -100,6 +107,18 @@ impl TabsWidget {
              .get("tab_separator")
              .map(|s| FormattedPart::from_format_string(s, config));
  
@@ -30,20 +278,24 @@ index b62f581..e6143ed 100644
 +            .map(|background| format!("#[bg={background}]"))
 +            .or_else(|| config.get("format_space").cloned())
 +            .and_then(|format| FormattedPart::from_format_string(&format, config).bg);
++        let powerline_background_blue = config
++            .get("format_space_blue")
++            .map(|format| FormattedPart::from_format_string(format, config).bg);
 +
          let bell_indicator = config.get("tab_bell_indicator").cloned();
          let flashing_bell_indicator = config
              .get("tab_flashing_bell_indicator")
-@@ -126,6 +138,8 @@ impl TabsWidget {
+@@ -126,6 +145,9 @@ impl TabsWidget {
              tab_truncate_start_format,
              tab_truncate_end_format,
              tab_zero_based_index,
 +            tab_powerline,
 +            powerline_background,
++            powerline_background_blue,
          }
      }
  }
-@@ -133,7 +147,6 @@ impl TabsWidget {
+@@ -133,7 +155,6 @@ impl TabsWidget {
  impl Widget for TabsWidget {
      fn process(&self, _name: &str, state: &ZellijState) -> String {
          let mut output = "".to_owned();
@@ -51,7 +303,7 @@ index b62f581..e6143ed 100644
  
          let (truncated_start, truncated_end, tabs) =
              get_tab_window(&state.tabs, self.tab_display_count);
-@@ -150,17 +163,8 @@ impl Widget for TabsWidget {
+@@ -150,17 +171,8 @@ impl Widget for TabsWidget {
              }
          }
  
@@ -71,7 +323,7 @@ index b62f581..e6143ed 100644
          }
  
          if truncated_end > 0 {
-@@ -180,7 +184,6 @@ impl Widget for TabsWidget {
+@@ -180,7 +192,6 @@ impl Widget for TabsWidget {
  
      fn process_click(&self, _name: &str, state: &ZellijState, pos: usize) {
          let mut offset = 0;
@@ -79,7 +331,7 @@ index b62f581..e6143ed 100644
  
          let (truncated_start, truncated_end, tabs) =
              get_tab_window(&state.tabs, self.tab_display_count);
-@@ -209,28 +212,12 @@ impl Widget for TabsWidget {
+@@ -209,28 +220,12 @@ impl Widget for TabsWidget {
              }
          }
  
@@ -113,7 +365,7 @@ index b62f581..e6143ed 100644
  
          if truncated_end > 0 {
              for f in &self.tab_truncate_end_format {
-@@ -251,6 +238,70 @@ impl Widget for TabsWidget {
+@@ -251,6 +246,76 @@ impl Widget for TabsWidget {
  }
  
  impl TabsWidget {
@@ -131,7 +383,13 @@ index b62f581..e6143ed 100644
 +                .rev()
 +                .find(|part| !part.content.is_empty());
 +            let current_background = current_edge.and_then(|part| part.bg);
-+            let next_background = next_tab.map_or(self.powerline_background, |next| {
++            let filler_background = if is_blue_theme(state) {
++                self.powerline_background_blue
++                    .unwrap_or(self.powerline_background)
++            } else {
++                self.powerline_background
++            };
++            let next_background = next_tab.map_or(filler_background, |next| {
 +                self.select_format(next, &state.mode)
 +                    .iter()
 +                    .find(|part| !part.content.is_empty())
@@ -184,7 +442,7 @@ index b62f581..e6143ed 100644
      fn select_format(&self, info: &TabInfo, mode: &ModeInfo) -> &Vec<FormattedPart> {
          if info.active && mode.mode == InputMode::RenameTab {
              return &self.rename_tab_format;
-@@ -460,11 +511,136 @@ pub fn get_tab_window(
+@@ -460,11 +525,157 @@ pub fn get_tab_window(
  
  #[cfg(test)]
  mod test {
@@ -271,6 +529,27 @@ index b62f581..e6143ed 100644
 +            widget.tab_click_target(&state.tabs, &state, 12, 7).0,
 +            Some(2)
 +        );
++    }
++
++    #[test]
++    fn powerline_filler_tracks_blue_profile_and_restores_base_background() {
++        let mut config = powerline_config();
++        config.insert("format_space_blue".to_owned(), "#[bg=#008080]".to_owned());
++        let widget = TabsWidget::new(&config);
++        let mut state = tab_state(&["one"], 0);
++        state.mode.style.colors.text_unselected.background =
++            zellij_tile::prelude::PaletteColor::Rgb((1, 4, 2));
++        let expected = widget.process("tabs", &state);
++        state.mode.style.colors.text_unselected.background =
++            zellij_tile::prelude::PaletteColor::Rgb((0, 0, 170));
++        let blue = widget.process("tabs", &state);
++        assert!(
++            blue.contains("\u{1b}[38;2;57;255;106m\u{1b}[48;2;0;128;128m"),
++            "{blue:?}"
++        );
++        state.mode.style.colors.text_unselected.background =
++            zellij_tile::prelude::PaletteColor::Rgb((1, 4, 2));
++        assert_eq!(widget.process("tabs", &state), expected);
 +    }
 +
 +    #[test]
