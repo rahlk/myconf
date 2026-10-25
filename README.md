@@ -1,50 +1,68 @@
-# mein-config
+# myconf
 
-Personal terminal configuration for macOS and the Ubuntu SSH host.
+Personal terminal config for macOS and the Ubuntu SSH host.
 
 ## Terminal appearance
 
-- Local Ghostty: bright green text on an almost-black green background.
-- Ubuntu SSH profile: bright orange text on black.
-- Departure Mono font, with Maple Mono NF for Nerd Font symbols.
+- Local Ghostty follows the system appearance: Retro Paper in light mode and Retro Green in dark mode.
+- Retro Paper uses black text on a pale paper background (`#FAF7ED`).
+- Retro Green uses bright green text on an almost-black green background.
+- Local SSH profile: Retro Red phosphor, with the same global shaders.
+- The Ubuntu theme remains available as an optional orange palette.
+- Local font: PxPlus IBM VGA 8x16 at size 18, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
-- CRT curvature, scan lines, and text bloom that gradually builds between band passes.
-- The leading band resets the bloom to almost zero as it crosses the screen.
+- Flat CRT screen, scan lines, background glow, and no text bloom.
+- Vignette strength: `0.10` for the general finish and `0.165` for white text on blue.
 - Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
-- One or three moving bands, chosen randomly every 20–40 seconds, with a 1.5-second travel time per band.
-- Reduced peak bloom and a 13-sample filter for clearer text and less GPU work.
-- Monochrome output for both profiles, including application RGB colors.
+- One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
+- Zellij matches the light and dark palettes, with top tabs, a date and clock, and rounded pane frames.
 
 ## Files
 
 | Path | Purpose |
 | --- | --- |
-| `.config/ghostty/` | Ghostty settings, active shaders, palettes, and SSH launcher |
-| `.config/zellij/` | Local Zellij settings and green theme |
+| `.config/ghostty/` | Ghostty config, five active shaders, palettes, and SSH launcher |
+| `.config/zellij/` | Local Zellij config, themes, layout, and zjstatus plugin |
 | `.local/share/fonts/DepartureMono/` | Departure Mono 1.500 and its license |
+| `macos/zellij-auto-attach.zsh` | Host-aware Zsh auto-attach block for local Zellij sessions |
 | `macos/Services/` | Cmd+Shift+T service for the SSH window |
 | `remote/.config/zellij/` | Orange SSH theme and bottom tab-bar layout |
 | `remote/ssh-zellij.zsh` | Remote Zsh auto-start block for local and SSH Zellij sessions |
 
-Only the active shader versions are included. Ghostty runs them in the order listed in its configuration.
+Only the five active shaders are included, with stable filenames. Ghostty runs them in this order:
+
+1. `block-cursor-halo.glsl`
+2. `glitch-timed-color.glsl`
+3. `crt-no-bloom.glsl`
+4. `phosphor-shared.glsl`
+5. `crt-finish-shared.glsl`
 
 ## Restore on macOS
 
-Copy the contents of `.config/ghostty/` into `~/.config/ghostty/`.
-The repository uses the filename `config`; the current installation uses `config.ghostty`.
-Use the settings from this repository in the active configuration file. Avoid keeping conflicting copies of both files.
+Copy the shaders, themes, and SSH launcher from `.config/ghostty/` into `~/.config/ghostty/`.
+The repository uses the filename `config`. The current installation uses `config.ghostty`.
+Copy the repository config into the active Ghostty config file.
+Avoid conflicting copies of `config` and `config.ghostty`.
 
 Copy `.config/zellij/` into `~/.config/zellij/`.
-Install `DepartureMono-Regular.otf` in `~/Library/Fonts/`.
-Install Maple Mono NF separately for Nerd Font symbols.
+Replace the existing local Zellij auto-start block in `~/.zshrc` with `macos/zellij-auto-attach.zsh`.
+Do not keep or source both auto-start blocks.
+The block selects separate sessions for terminal applications, Claude, Codex, VS Code, and other hosts.
+It serializes startup and attaches a real client immediately so the first tab initializes its tab bar.
+Set `ZELLIJ_AUTO_ATTACH=false` to skip auto-attach.
+Set `ZELLIJ_AUTO_SESSION` to select a session name.
+
+Install PxPlus IBM VGA 8x16 and Maple Mono NF separately in `~/Library/Fonts/`.
+The repository includes Departure Mono for the Ubuntu desktop profile.
 
 Copy the workflow from `macos/Services/` into `~/Library/Services/`.
 Enable its Cmd+Shift+T shortcut in macOS Keyboard settings under Services.
 The launcher creates a separate SSH window because borderless windows cannot host native tabs reliably.
-The service and launcher contain personal paths under `/Users/rkrsn` and the `stagger-juice` SSH destination.
+The local files contain personal paths under `/Users/rkrsn` and the `stagger-juice` SSH destination.
 
 Reload Ghostty after applying the files.
-For shader edits, change the configured shader filename to force a rebuild in Ghostty 1.3.1.
+For later shader edits, change the configured shader filename to force a rebuild in Ghostty 1.3.1.
+A reload with the same filename can reuse a cached shader build.
 
 ## Restore on the Ubuntu host
 
@@ -52,9 +70,10 @@ Copy `remote/.config/zellij/` into `~/.config/zellij/` on the host.
 Replace the existing Zellij auto-start block in `~/.zshrc` with `remote/ssh-zellij.zsh`.
 Do not keep both auto-start blocks.
 The SSH block preserves the client terminal palette and selects the orange Zellij theme.
-The normal remote desktop session keeps its existing Zellij configuration.
+The normal remote desktop session keeps its existing Zellij config.
 
-Install the font in `~/.local/share/fonts/DepartureMono/`, then run `fc-cache -f`.
+Install the font in `~/.local/share/fonts/DepartureMono/`.
+Then run `fc-cache -f`.
 The configured desktop sizes are Departure Mono 11.5 for ddterm and 12 for GNOME Terminal.
 The system monospace default is Departure Mono 11.
 
@@ -69,4 +88,5 @@ infocmp -x -A /Applications/Ghostty.app/Contents/Resources/terminfo xterm-ghostt
 
 The CRT and glitch shaders derive from [hackrdotsh/ghostty-shaders](https://github.com/hackrdotsh/ghostty-shaders).
 Their original source and license comments remain in the shader files.
+The Zellij tab bar uses [dj95/zjstatus](https://github.com/dj95/zjstatus). Its upstream license accompanies the plugin.
 Departure Mono includes its license beside the font file.

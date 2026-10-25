@@ -3,7 +3,7 @@ themes {
     retro-green {
         text_unselected {
             base 109 255 128
-            background 2 10 4
+            background 1 4 2
             emphasis_0 189 255 140
             emphasis_1 136 255 191
             emphasis_2 151 223 163
@@ -27,7 +27,7 @@ themes {
         }
         ribbon_unselected {
             base 151 223 163
-            background 10 30 16
+            background 1 4 2
             emphasis_0 189 255 140
             emphasis_1 209 255 218
             emphasis_2 97 199 143

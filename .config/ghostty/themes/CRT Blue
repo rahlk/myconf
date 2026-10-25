@@ -1,0 +1,26 @@
+# White-on-blue IBM EGA terminal for the light appearance.
+# font-family = PxPlus IBM EGA 9x14
+
+background = #000055
+foreground = #ffffff
+cursor-color = #ffffff
+cursor-text = #000055
+selection-background = #ffffff
+selection-foreground = #000055
+
+palette = 0=#000055
+palette = 1=#c8c8e0
+palette = 2=#d0d0e8
+palette = 3=#d8d8ec
+palette = 4=#b8b8d8
+palette = 5=#c8c8e0
+palette = 6=#d8d8ec
+palette = 7=#eeeeff
+palette = 8=#9999bb
+palette = 9=#e0e0f4
+palette = 10=#eeeeff
+palette = 11=#ffffff
+palette = 12=#d0d0ee
+palette = 13=#e8e8f8
+palette = 14=#f4f4ff
+palette = 15=#ffffff

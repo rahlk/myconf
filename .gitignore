@@ -1,0 +1,4 @@
+.DS_Store
+*.before-*
+*.bak
+*.bak[0-9]*

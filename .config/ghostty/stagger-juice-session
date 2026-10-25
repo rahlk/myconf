@@ -1,5 +1,5 @@
 #!/bin/sh
-# Apply the retro orange Ubuntu palette; retain Ghostty's global shaders.
+# Retro Red shares Retro Green's CRT effects with saturated red phosphor.
 /usr/bin/awk -F ' *= *' '
   $1 == "palette" { printf "\033]4;%s;%s\007", $2, $3 }
   $1 == "foreground" { printf "\033]10;%s\007", $2 }
@@ -7,6 +7,6 @@
   $1 == "cursor-color" { printf "\033]12;%s\007", $2 }
   $1 == "selection-background" { printf "\033]17;%s\007", $2 }
   $1 == "selection-foreground" { printf "\033]19;%s\007", $2 }
-' /Users/rkrsn/.config/ghostty/themes/Ubuntu
+' /Users/rkrsn/.config/ghostty/themes/Retro\ Red
 
 exec ssh rkrsn@stagger-juice.ddns.net

@@ -52,12 +52,12 @@ float gnoise(vec3 x)
 
     // interpolation
     float gNoise = va + u.x * (vb - va) +
-                   u.y * (vc - va) +
-                   u.z * (ve - va) +
-                   u.x * u.y * (va - vb - vc + vd) +
-                   u.y * u.z * (va - vc - ve + vg) +
-                   u.z * u.x * (va - vb - ve + vf) +
-                   u.x * u.y * u.z * (-va + vb + vc - vd + ve - vf - vg + vh);
+                u.y * (vc - va) +
+                u.z * (ve - va) +
+                u.x * u.y * (va - vb - vc + vd) +
+                u.y * u.z * (va - vc - ve + vg) +
+                u.z * u.x * (va - vb - ve + vf) +
+                u.x * u.y * u.z * (-va + vb + vc - vd + ve - vf - vg + vh);
 
     return 2. * gNoise;
 }
@@ -115,8 +115,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float y = uv.y * iResolution.y;
     float distortion = gnoise(vec3(0., y * .01, t * 500.)) * (glitchAmount * 4. + .1);
     distortion *= gnoise(vec3(0., y * .02, t * 250.)) * (glitchAmount * 2. + .025);
-    // Reduce the previous 0.45 jitter strength by 25%.
-    distortion *= 0.3375;
+    // Slowly drift between random levels rather than flickering per frame.
+    // The multiplier ranges from 0.75x to 1.75x the current jitter strength.
+    float driftTime = t / 5.0;
+    float driftSlot = floor(driftTime);
+    float driftBlend = smoothstep(0.0, 1.0, fract(driftTime));
+    float drift = mix(eventRandom(driftSlot, 313.7),
+                      eventRandom(driftSlot + 1.0, 313.7), driftBlend);
+    float jitterStrength = 0.3375 * mix(0.75, 1.75, drift);
+    distortion *= jitterStrength;
 
     // Independent band gaps: 20-40 seconds, moving bottom to top.
     float bandAge = eventAge(t, 30., 10., 83.7);

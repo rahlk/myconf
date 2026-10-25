@@ -1,0 +1,24 @@
+# Red phosphor terminal palette.
+background = #040000
+foreground = #ff7833
+cursor-color = #ff9955
+cursor-text = #0a0000
+selection-background = #4d240f
+selection-foreground = #ffb580
+
+palette = 0=#0a0502
+palette = 1=#8b411c
+palette = 2=#d9662b
+palette = 3=#db672c
+palette = 4=#8b411c
+palette = 5=#b85725
+palette = 6=#d9662b
+palette = 7=#df692d
+palette = 8=#663014
+palette = 9=#bd5926
+palette = 10=#ff7833
+palette = 11=#ff7833
+palette = 12=#c75e28
+palette = 13=#e0692d
+palette = 14=#ff7833
+palette = 15=#ff7833

@@ -62,7 +62,7 @@
 // Recommended values:
 //  o High DPI displays: 0.33333333
 //  - Low DPI displays:  0.66666666
-#define SCALE 0.33333333
+#define SCALE 0.25
 
 // "Tube" warp
 #define CRTS_WARP 1
@@ -288,68 +288,16 @@ vec3 ToSrgb(vec3 c) {
     ToSrgb1(c.r), ToSrgb1(c.g), ToSrgb1(c.b));
 }
 
-// Glow controls: strength of the halo and its radius in screen pixels.
-#define BLOOM_STRENGTH 0.157716888
-#define BLOOM_RADIUS 6.0
-
-// Match the moving-band schedule in glitch-timed-color-v12.glsl.
-float bloomBandStart(float slot) {
-  float randomOffset = fract(sin(slot * 127.1 + 83.7) * 43758.5453);
-  return slot * 30.0 + 10.0 + 10.0 * randomOffset;
-}
-
-float growingBloom(vec2 uv) {
-  float slot = floor(iTime / 30.0);
-  if (iTime < bloomBandStart(slot)) slot -= 1.0;
-  // Reset each row when the band reaches it during its 1.5-second pass.
-  float rowDelay = clamp((uv.y + 0.05) / 1.1, 0.0, 1.0) * 1.5;
-  if (slot >= 0.0 && iTime < bloomBandStart(slot) + rowDelay) slot -= 1.0;
-  float lastReset = slot < 0.0 ? 0.0 : bloomBandStart(slot) + rowDelay;
-  float nextReset = bloomBandStart(slot + 1.0) + rowDelay;
-  float progress = clamp((iTime - lastReset) / max(nextReset - lastReset, 0.001), 0.0, 1.0);
-  float strength = mix(0.02, 1.0, progress);
-  // Fade across the passing band instead of abruptly stepping to zero.
-  if (slot >= 0.0) {
-    float resetFade = smoothstep(0.0, 0.08, iTime - lastReset);
-    strength = mix(1.0, strength, resetFade);
-  }
-  return BLOOM_STRENGTH * strength;
-}
-
-vec3 bloomSample(vec2 uv) {
-  vec3 color = texture(iChannel0, clamp(uv, vec2(0.0), vec2(1.0))).rgb;
-  float brightness = max(color.r, max(color.g, color.b));
-  return color * smoothstep(0.10, 0.65, brightness);
-}
-
-vec3 textBloom(vec2 uv) {
-  // Scale the halo for Retina displays while retaining a sharp text core.
-  float radius = BLOOM_RADIUS * max(1.0, iResolution.y / 1000.0);
-  vec2 stepUV = vec2(radius) / iResolution.xy;
-  // Thirteen weighted taps replace the previous 49-tap blur.
-  vec3 glow = bloomSample(uv) * 0.20;
-  glow += (bloomSample(uv + stepUV * vec2( 0.5, 0.0))
-         + bloomSample(uv + stepUV * vec2(-0.5, 0.0))
-         + bloomSample(uv + stepUV * vec2(0.0,  0.5))
-         + bloomSample(uv + stepUV * vec2(0.0, -0.5))) * 0.09;
-  glow += (bloomSample(uv + stepUV * vec2( 0.5,  0.5))
-         + bloomSample(uv + stepUV * vec2(-0.5,  0.5))
-         + bloomSample(uv + stepUV * vec2( 0.5, -0.5))
-         + bloomSample(uv + stepUV * vec2(-0.5, -0.5))) * 0.065;
-  glow += (bloomSample(uv + stepUV * vec2( 1.0, 0.0))
-         + bloomSample(uv + stepUV * vec2(-1.0, 0.0))
-         + bloomSample(uv + stepUV * vec2(0.0,  1.0))
-         + bloomSample(uv + stepUV * vec2(0.0, -1.0))) * 0.045;
-  return glow;
-}
-
+// Flat CRT scan lines, with no text bloom.
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  // Keep the original tube curvature, sampling text at native resolution.
-  float aspect = iResolution.x / iResolution.y;
-  vec2 pos = fragCoord / iResolution.xy * 2.0 - 1.0;
-  pos *= vec2(1.0 + pos.y * pos.y / (50.0 * aspect),
-              1.0 + pos.x * pos.x / 50.0);
-  vec2 uv = pos * 0.5 + 0.5;
+  // Flat screen: sample text at its original coordinates.
+  // Curvature disabled; use this block instead of the flat UV line to restore it.
+  // float aspect = iResolution.x / iResolution.y;
+  // vec2 pos = fragCoord / iResolution.xy * 2.0 - 1.0;
+  // pos *= vec2(1.0 + pos.y * pos.y / (50.0 * aspect),
+  //             1.0 + pos.x * pos.x / 50.0);
+  // vec2 uv = pos * 0.5 + 0.5;
+  vec2 uv = fragCoord / iResolution.xy;
   if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) {
     fragColor = vec4(0.0, 0.0, 0.0, 1.0);
     return;
@@ -361,11 +309,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
                  + texture(iChannel0, clamp(uv + pixel, vec2(0.0), vec2(1.0))).rgb) * 0.5;
   color.rgb = mix(color.rgb, softColor, 0.12);
   // Phosphor attenuation increased by 50%, from 0.132 to 0.198.
-  float scanline = 0.92 + 0.08 * cos(6.28318530718 * uv.y * iResolution.y * SCALE);
+  // Dark scanlines are applied after brightness in the final vignette pass.
+  float scanline = 1.0;
   vec3 mask = CrtsMask(fragCoord, 0.802);
+  float backgroundLuminance = dot(iBackgroundColor, vec3(0.2126, 0.7152, 0.0722));
+  bool lightSurface = backgroundLuminance > 0.5;
+  if (lightSurface) {
+    // Four physical pixels per scanline cycle.
+    scanline = 0.94 + 0.06 * cos(6.28318530718 * uv.y * iResolution.y * SCALE);
+    mask = vec3(1.0);
+  }
   vec3 core = color.rgb * scanline * mask;
-  // Add emitted light around letters instead of merely darkening the mask.
-  vec3 halo = textBloom(uv) * growingBloom(uv);
-  vec3 bloomed = core + halo * (vec3(1.0) - core);
-  fragColor = vec4(clamp(bloomed, 0.0, 1.0), color.a);
+  fragColor = vec4(clamp(core, 0.0, 1.0), color.a);
 }

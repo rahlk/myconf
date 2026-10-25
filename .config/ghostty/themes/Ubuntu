@@ -1,4 +1,4 @@
-# Retro orange phosphor palette on black.
+# Retro orange phosphor fading to pure black.
 palette = 0=#000000
 palette = 1=#b34b19
 palette = 2=#cc7629
@@ -19,5 +19,5 @@ background = #000000
 foreground = #ff9b42
 cursor-color = #ffc266
 cursor-text = #000000
-selection-background = #5c2d0e
+selection-background = #4d2916
 selection-foreground = #ffe0b3

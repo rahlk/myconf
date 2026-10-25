@@ -1,11 +1,16 @@
-# Retro green phosphor palette.
-theme = Retro Green
+# Follow the system appearance with matching CRT palettes.
+theme = light:Retro Paper,dark:Retro Green
 
 cursor-style = underline
 cursor-style-blink = true
 shell-integration-features = no-cursor
+# Use PxPlus IBM VGA 8x16 for terminal text.
 font-family = ""
-font-family = Departure Mono
+# font-family = PxPlus IBM EGA 9x14
+# font-family = Departure Mono
+font-family = PxPlus IBM VGA 8x16
+# font-family = Maple Mono NF
+font-size = 18
 # Use Maple Mono only for Nerd Font symbols, not ordinary text.
 font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFD=Maple Mono NF
 
@@ -14,11 +19,12 @@ background-blur = false
 
 custom-shader = shaders/block-cursor-halo.glsl
 # Continuous light jitter; occasional random bursts and bands with RGB splitting.
-custom-shader = shaders/glitch-timed-color-v14.glsl
-# CRT curvature, scan lines, and luminous text bloom.
-custom-shader = shaders/crt-bloom-v13.glsl
-# Bright monochrome text for both green and orange profiles.
-custom-shader = shaders/phosphor-brightness-v2.glsl
+custom-shader = shaders/glitch-timed-color.glsl
+# Flat CRT screen and scan lines, without text bloom.
+custom-shader = shaders/crt-no-bloom.glsl
+# Bright monochrome text for the green and Ubuntu profiles.
+custom-shader = shaders/phosphor-shared.glsl
+custom-shader = shaders/crt-finish-shared.glsl
 custom-shader-animation = true
 
 # Merge tabs into the title bar when window decorations are enabled.
