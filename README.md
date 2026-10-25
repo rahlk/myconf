@@ -4,8 +4,10 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 
 ## Terminal appearance
 
-- Local Ghostty follows the system appearance: Retro Paper in light mode and Retro Green in dark mode.
-- Retro Paper uses black text on a pale paper background (`#FAF9F6`).
+- Local Ghostty follows the system appearance: CRT Blue in light mode and Retro Green in dark mode.
+- CRT Blue uses the standard 16-color DOS palette, with a blue background (`#0000AA`) and light gray text (`#AAAAAA`).
+- The DOS appearance includes gray menus and borders, with red, yellow, and cyan ANSI accents.
+- Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
 - The Ubuntu theme remains available as an optional orange palette.
@@ -15,7 +17,8 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Vignette strength: `0.10` for the general finish and `0.165` for white text on blue.
 - Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
 - One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
-- Zellij matches the light and dark palettes, with top tabs, a date and clock, and rounded pane frames.
+- Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
+- The light Zellij theme uses DOS blue and gray, with yellow for selected elements. A date and clock appear beside the tabs.
 
 ## Files
 

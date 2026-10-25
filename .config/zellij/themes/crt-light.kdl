@@ -1,129 +1,129 @@
-// Muted white-on-blue UI for the Ghostty CRT Blue light appearance.
+// Classic DOS gray text on blue, with yellow selections and gray menus.
 themes {
     crt-light {
         text_unselected {
-            base 190 190 215
-            background 0 0 85
-            emphasis_0 220 220 240
-            emphasis_1 205 205 230
-            emphasis_2 175 175 205
-            emphasis_3 160 160 195
-        }
-        text_selected {
-            base 23 23 23
-            background 195 195 195
-            emphasis_0 50 50 50
-            emphasis_1 40 40 40
-            emphasis_2 55 55 55
-            emphasis_3 65 65 65
-        }
-        ribbon_selected {
-            base 238 238 255
-            background 24 24 104
-            emphasis_0 210 210 235
-            emphasis_1 225 225 245
-            emphasis_2 210 210 235
-            emphasis_3 238 238 255
-        }
-        ribbon_unselected {
-            base 160 160 190
-            background 0 0 85
-            emphasis_0 190 190 215
-            emphasis_1 205 205 230
-            emphasis_2 175 175 205
-            emphasis_3 160 160 195
-        }
-        table_title {
-            base 40 40 40
-            background 240 239 233
-            emphasis_0 50 50 50
-            emphasis_1 40 40 40
-            emphasis_2 55 55 55
-            emphasis_3 65 65 65
-        }
-        table_cell_selected {
-            base 23 23 23
-            background 195 195 195
-            emphasis_0 50 50 50
-            emphasis_1 40 40 40
-            emphasis_2 55 55 55
-            emphasis_3 65 65 65
-        }
-        table_cell_unselected {
-            base 23 23 23
-            background 240 239 233
-            emphasis_0 50 50 50
-            emphasis_1 40 40 40
-            emphasis_2 55 55 55
-            emphasis_3 65 65 65
-        }
-        list_selected {
-            base 23 23 23
-            background 195 195 195
-            emphasis_0 50 50 50
-            emphasis_1 40 40 40
-            emphasis_2 55 55 55
-            emphasis_3 65 65 65
-        }
-        list_unselected {
-            base 23 23 23
-            background 240 239 233
-            emphasis_0 50 50 50
-            emphasis_1 40 40 40
-            emphasis_2 55 55 55
-            emphasis_3 65 65 65
-        }
-        frame_unselected {
-            base 110 110 110
-            background 240 239 233
-            emphasis_0 110 110 110
-            emphasis_1 110 110 110
-            emphasis_2 110 110 110
-            emphasis_3 110 110 110
-        }
-        frame_selected {
-            base 255 255 255
-            background 0 0 85
+            base 170 170 170
+            background 0 0 170
             emphasis_0 255 255 255
-            emphasis_1 255 255 255
-            emphasis_2 255 255 255
+            emphasis_1 255 255 85
+            emphasis_2 85 255 255
             emphasis_3 255 255 255
         }
-        frame_highlight {
-            base 255 255 255
-            background 0 0 85
+        text_selected {
+            base 0 0 0
+            background 255 255 85
+            emphasis_0 0 0 0
+            emphasis_1 170 0 0
+            emphasis_2 0 0 170
+            emphasis_3 0 0 0
+        }
+        ribbon_selected {
+            base 0 0 0
+            background 170 170 170
+            emphasis_0 0 0 170
+            emphasis_1 170 0 0
+            emphasis_2 0 0 0
+            emphasis_3 0 0 170
+        }
+        ribbon_unselected {
+            base 170 170 170
+            background 0 0 170
             emphasis_0 255 255 255
+            emphasis_1 255 255 85
+            emphasis_2 85 255 255
+            emphasis_3 255 255 255
+        }
+        table_title {
+            base 170 170 170
+            background 0 0 170
+            emphasis_0 255 255 255
+            emphasis_1 255 255 85
+            emphasis_2 85 255 255
+            emphasis_3 255 255 255
+        }
+        table_cell_selected {
+            base 0 0 0
+            background 255 255 85
+            emphasis_0 0 0 0
+            emphasis_1 170 0 0
+            emphasis_2 0 0 170
+            emphasis_3 0 0 0
+        }
+        table_cell_unselected {
+            base 170 170 170
+            background 0 0 170
+            emphasis_0 255 255 255
+            emphasis_1 255 255 85
+            emphasis_2 85 255 255
+            emphasis_3 255 255 255
+        }
+        list_selected {
+            base 0 0 0
+            background 255 255 85
+            emphasis_0 0 0 0
+            emphasis_1 170 0 0
+            emphasis_2 0 0 170
+            emphasis_3 0 0 0
+        }
+        list_unselected {
+            base 170 170 170
+            background 0 0 170
+            emphasis_0 255 255 255
+            emphasis_1 255 255 85
+            emphasis_2 85 255 255
+            emphasis_3 255 255 255
+        }
+        frame_unselected {
+            base 170 170 170
+            background 0 0 170
+            emphasis_0 170 170 170
+            emphasis_1 170 170 170
+            emphasis_2 170 170 170
+            emphasis_3 170 170 170
+        }
+        frame_selected {
+            base 170 170 170
+            background 0 0 170
+            emphasis_0 170 170 170
+            emphasis_1 170 170 170
+            emphasis_2 170 170 170
+            emphasis_3 170 170 170
+        }
+        frame_highlight {
+            base 255 255 85
+            background 0 0 170
+            emphasis_0 255 255 85
             emphasis_1 255 255 255
-            emphasis_2 255 255 255
+            emphasis_2 255 255 85
             emphasis_3 255 255 255
         }
         exit_code_success {
-            base 45 45 45
-            background 240 239 233
-            emphasis_0 40 40 40
-            emphasis_1 240 239 233
-            emphasis_2 65 65 65
-            emphasis_3 70 70 70
+            base 0 0 0
+            background 170 170 170
+            emphasis_0 0 170 0
+            emphasis_1 0 0 0
+            emphasis_2 0 0 170
+            emphasis_3 0 0 0
         }
         exit_code_error {
-            base 50 50 50
-            background 240 239 233
-            emphasis_0 50 50 50
-            emphasis_1 25 25 25
-            emphasis_2 25 25 25
-            emphasis_3 25 25 25
+            base 170 0 0
+            background 170 170 170
+            emphasis_0 170 0 0
+            emphasis_1 0 0 0
+            emphasis_2 170 0 0
+            emphasis_3 0 0 0
         }
         multiplayer_user_colors {
-            player_1 65 65 65
-            player_2 70 70 70
-            player_3 50 50 50
-            player_4 40 40 40
-            player_5 55 55 55
-            player_6 45 45 45
-            player_7 23 23 23
-            player_8 80 80 80
-            player_9 90 90 90
-            player_10 25 25 25
+            player_1 85 255 255
+            player_2 255 255 85
+            player_3 255 255 255
+            player_4 85 255 85
+            player_5 255 85 85
+            player_6 255 85 255
+            player_7 170 170 170
+            player_8 0 170 170
+            player_9 0 170 0
+            player_10 170 0 0
         }
     }
 }

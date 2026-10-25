@@ -1,5 +1,5 @@
 # Follow the system appearance with matching CRT palettes.
-theme = light:Retro Paper,dark:Retro Green
+theme = light:CRT Blue,dark:Retro Green
 
 cursor-style = underline
 cursor-style-blink = true

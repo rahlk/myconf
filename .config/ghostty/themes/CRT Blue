@@ -1,26 +1,27 @@
-# White-on-blue IBM EGA terminal for the light appearance.
-# font-family = PxPlus IBM EGA 9x14
-
-background = #000055
-foreground = #ffffff
+# DOS VGA palette matched to the blue editor reference.
+background = #0000aa
+foreground = #aaaaaa
+bold-color = #ffffff
+font-style-bold = false
+font-style-bold-italic = false
 cursor-color = #ffffff
-cursor-text = #000055
-selection-background = #ffffff
-selection-foreground = #000055
+cursor-text = #0000aa
+selection-background = #aaaaaa
+selection-foreground = #000000
 
-palette = 0=#000055
-palette = 1=#c8c8e0
-palette = 2=#d0d0e8
-palette = 3=#d8d8ec
-palette = 4=#b8b8d8
-palette = 5=#c8c8e0
-palette = 6=#d8d8ec
-palette = 7=#eeeeff
-palette = 8=#9999bb
-palette = 9=#e0e0f4
-palette = 10=#eeeeff
-palette = 11=#ffffff
-palette = 12=#d0d0ee
-palette = 13=#e8e8f8
-palette = 14=#f4f4ff
+palette = 0=#000000
+palette = 1=#aa0000
+palette = 2=#00aa00
+palette = 3=#aa5500
+palette = 4=#0000aa
+palette = 5=#aa00aa
+palette = 6=#00aaaa
+palette = 7=#aaaaaa
+palette = 8=#555555
+palette = 9=#ff5555
+palette = 10=#55ff55
+palette = 11=#ffff55
+palette = 12=#5555ff
+palette = 13=#ff55ff
+palette = 14=#55ffff
 palette = 15=#ffffff
