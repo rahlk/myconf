@@ -18,7 +18,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
 - One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
-- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The tab bar uses a uniform Windows teal (`#008080`) background with white labels and a clock.
+- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The tab bar uses a uniform Windows teal (`#008080`) background with white labels, Powerline arrows, and a clock.
 
 ## Files
 

@@ -3,7 +3,7 @@ layout {
     default_tab_template {
         pane size=1 borderless=true {
             plugin location="file:/Users/rkrsn/.config/zellij/plugins/zjstatus.wasm" {
-                format_left "{tabs}"
+                format_left "#[bg=#008080]| {tabs}"
                 format_center ""
                 format_right "{command_clock}"
                 format_space "#[bg=#008080]"
@@ -11,9 +11,9 @@ layout {
                 border_enabled "false"
                 hide_frame_for_single_pane "false"
 
-                tab_normal "#[bg=#008080] {index} {name} "
-                tab_active "#[bg=#008080] [{index} {name}] "
-                tab_separator "#[bg=#008080] "
+                tab_normal "#[bg=#008080] {name} "
+                tab_active "#[bg=#008080] [{name}] "
+                tab_separator ""
 
                 command_clock_command "/usr/bin/env LC_TIME=C /bin/date '+%m/%d/%Y %H:%M %Z'"
                 command_clock_format "#[bg=#008080] {stdout} "
