@@ -1,9 +1,9 @@
-// Bright DOS white text on blue, with yellow selections and gray menus.
+// Bright white text on royal blue, with yellow selections and gray menus.
 themes {
     crt-light {
         text_unselected {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 85
             emphasis_2 85 255 255
@@ -27,7 +27,7 @@ themes {
         }
         ribbon_unselected {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 85
             emphasis_2 85 255 255
@@ -35,7 +35,7 @@ themes {
         }
         table_title {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 85
             emphasis_2 85 255 255
@@ -51,7 +51,7 @@ themes {
         }
         table_cell_unselected {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 85
             emphasis_2 85 255 255
@@ -67,7 +67,7 @@ themes {
         }
         list_unselected {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 85
             emphasis_2 85 255 255
@@ -75,7 +75,7 @@ themes {
         }
         frame_unselected {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 255
             emphasis_2 255 255 255
@@ -83,7 +83,7 @@ themes {
         }
         frame_selected {
             base 255 255 255
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 255
             emphasis_1 255 255 255
             emphasis_2 255 255 255
@@ -91,7 +91,7 @@ themes {
         }
         frame_highlight {
             base 255 255 85
-            background 0 0 170
+            background 28 50 199
             emphasis_0 255 255 85
             emphasis_1 255 255 255
             emphasis_2 255 255 85

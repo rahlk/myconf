@@ -5,7 +5,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 ## Terminal appearance
 
 - Local Ghostty follows the system appearance: CRT Blue in light mode and Retro Green in dark mode.
-- CRT Blue uses DOS colors with a blue background (`#0000AA`) and bright white text (`#FFFFFF`).
+- CRT Blue uses DOS colors with a brighter royal blue background (`#1C32C7`) and bright white text (`#FFFFFF`).
 - The DOS appearance includes gray menus and white borders, with red, yellow, and cyan ANSI accents.
 - Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
