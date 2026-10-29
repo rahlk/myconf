@@ -1,0 +1,238 @@
+# If you come from bash you might have to change your $PATH.
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
+# Path to your Oh My Zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+export PATH=$PATH:/Users/rkrsn/.local/bin
+
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time Oh My Zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="robbyrussell"
+
+# Set ANTHROPIC_API_KEY in your local environment.
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+
+# Uncomment the following line to change how often to auto-update (in days).
+# zstyle ':omz:update' frequency 13
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
+
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
+
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="mm/dd/yyyy"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='nvim'
+# fi
+
+# Compilation flags
+# export ARCHFLAGS="-arch $(uname -m)"
+
+# Set personal aliases, overriding those provided by Oh My Zsh libs,
+# plugins, and themes. Aliases can be placed here, though Oh My Zsh
+# users are encouraged to define aliases within a top-level file in
+# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
+# - $ZSH_CUSTOM/aliases.zsh
+# - $ZSH_CUSTOM/macos.zsh
+# For a full list of active aliases, run `alias`.
+#
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+# eza aliases (ls/l/ll/la/lt/lh/tree) live in ~/.oh-my-zsh/custom/eza.zsh
+# Yazi Configuration
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+eval "$(starship init zsh)"
+# ── zellij: host-aware auto-attach ──────────────────────────────────
+# One persistent session per host program, so "main" stays reserved for
+# shells I start myself in a real terminal:
+#   claude code -> claude   codex -> codex   vscode/codium -> code
+#   iTerm2/Terminal.app/Ghostty/... -> main   anything else -> other
+# Serialize creation: simultaneous `attach --create`
+# calls can start competing servers for the same session socket.
+# Escape hatches: ZELLIJ_AUTO_ATTACH=false zsh | ZELLIJ_AUTO_SESSION=foo zsh
+if [[ -o interactive && -t 1 && "$ZELLIJ_AUTO_ATTACH" != "false" ]]; then
+  if   [[ -n "$ZELLIJ_AUTO_SESSION" ]]; then zj="$ZELLIJ_AUTO_SESSION"
+  elif [[ -n "$CLAUDECODE" || "$TERM_PROGRAM" == claude* \
+       || "$__CFBundleIdentifier" == com.anthropic.* ]];               then zj=claude
+  elif [[ -n "${CODEX_SANDBOX}${CODEX_INTERNAL_ORIGINATOR_OVERRIDE}" \
+       || "$TERM_PROGRAM" == codex* || "$__CFBundleIdentifier" == com.openai.* ]]; then zj=codex
+  elif [[ "$TERM_PROGRAM" == vscode \
+       || "$__CFBundleIdentifier" == (com.microsoft.VSCode|com.vscodium|com.visualstudio.code.oss)* ]]; then zj=code
+  elif [[ "$TERM_PROGRAM" == (Apple_Terminal|iTerm.app|ghostty|WezTerm|Hyper|Tabby|rio) \
+       || "$TERM" == (xterm-kitty|alacritty*) \
+       || "$__CFBundleIdentifier" == (com.apple.Terminal|com.googlecode.iterm2|com.mitchellh.ghostty) ]]; then zj=main
+  else                                                                      zj=other
+  fi
+
+  # $ZELLIJ* is inherited by every app a pane launches (Claude Desktop, VS
+  # Code, ...), so it alone can't say whether this shell IS a pane - walk up
+  # the process tree and see which comes first, the zellij server or a host
+  # program. Already in the session we'd pick? Nothing to do either way.
+  if [[ -n "$ZELLIJ" ]]; then
+    [[ "$ZELLIJ_SESSION_NAME" == "$zj" ]] && zj=
+    if [[ -n "$zj" ]]; then
+      typeset -gA zj_ppid zj_comm
+      local zj_p zj_pp zj_c
+      while read -r zj_p zj_pp zj_c; do zj_ppid[$zj_p]=$zj_pp; zj_comm[$zj_p]=$zj_c; done \
+        < <(ps -Ao pid=,ppid=,comm=)
+      zj_p=$PPID
+      while (( zj_p > 1 )); do
+        zj_c=${zj_comm[$zj_p]:t}
+        case $zj_c in
+          zellij) zj=; break ;;                                     # a real pane: stay put
+          claude*|codex*|node|Electron|Code*|VSCodium*|Cursor*|Windsurf*|*Helper*) break ;;
+        esac                                                        # host in between: stale env
+        zj_p=${zj_ppid[$zj_p]:-1}
+      done
+      unset zj_ppid zj_comm zj_p zj_pp zj_c
+    fi
+  fi
+
+  if [[ -n "$zj" ]]; then
+    unset ZELLIJ ZELLIJ_SESSION_NAME ZELLIJ_PANE_ID   # drop inherited pane env
+    if (
+      setopt localoptions nomonitor
+      zmodload zsh/system || exit 1
+      local zj_lock_dir="${TMPDIR:-/tmp}/zellij-${UID}"
+      local zj_lock_fd zj_client_pid zj_cache_dir zj_line zj_marker
+      local zj_deadline zj_metadata zj_key zj_value zj_ready zj_tty_state zj_attempt
+      mkdir -p -m 700 "$zj_lock_dir" || exit 1
+      : >> "$zj_lock_dir/auto-attach.lock" || exit 1
+      zsystem flock -t 10 -i 0.05 -f zj_lock_fd "$zj_lock_dir/auto-attach.lock" || exit 1
+
+      # Read the cache path without sending IPC to an initializing server.
+      while IFS= read -r zj_line; do
+        [[ "$zj_line" == '[CACHE DIR]: '* ]] && zj_cache_dir=${zj_line#'[CACHE DIR]: '}
+      done < <(zellij setup --check 2>/dev/null)
+      [[ -n "$zj_cache_dir" ]] || exit 1
+      zj_marker=$(mktemp "$zj_lock_dir/auto-attach.XXXXXX") || exit 1
+      trap 'rm -f -- "$zj_marker"' EXIT
+      zj_tty_state=$(stty -g < /dev/tty) || exit 1
+
+      # A real first client initializes plugins. Avoid a blocking action
+      # query during startup; fresh metadata confirms a connected client.
+      zellij attach --create "$zj" < /dev/tty > /dev/tty 2>&1 &
+      zj_client_pid=$!
+      zj_deadline=$((SECONDS + 8))
+      while kill -0 "$zj_client_pid" 2>/dev/null; do
+        zj_ready=false
+        for zj_metadata in "$zj_cache_dir"/contract_version_*/session_info/"$zj"/session-metadata.kdl(N); do
+          [[ "$zj_metadata" -nt "$zj_marker" ]] || continue
+          while read -r zj_key zj_value; do
+            [[ "$zj_key" == connected_clients && "$zj_value" == <1-> ]] && zj_ready=true
+          done < "$zj_metadata"
+        done
+        [[ "$zj_ready" == true ]] && break
+        if (( SECONDS >= zj_deadline )); then
+          kill -TERM "$zj_client_pid" 2>/dev/null
+          for zj_attempt in {1..10}; do
+            kill -0 "$zj_client_pid" 2>/dev/null || break
+            sleep 0.05
+          done
+          if kill -0 "$zj_client_pid" 2>/dev/null; then
+            kill -KILL "$zj_client_pid" 2>/dev/null
+          fi
+          wait "$zj_client_pid" 2>/dev/null
+          print -rn -- $'\e[?1006l\e[?1015l\e[?1003l\e[?1002l\e[?1000l\e[<1u\e[?2031l\e[?1004l\e[?2004l\e[?1049l\e[m\e[?25h' > /dev/tty
+          stty "$zj_tty_state" < /dev/tty
+          exit 1
+        fi
+        sleep 0.05
+      done
+      zsystem flock -u "$zj_lock_fd"
+      wait "$zj_client_pid"
+    ); then
+      [[ "$ZELLIJ_AUTO_EXIT" == "true" ]] && exit
+    else
+      print -u2 -r -- "Zellij could not start session '$zj'; continuing in this shell."
+    fi
+  fi
+  unset zj
+fi
+eval "$(zoxide init zsh)"
+
+export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/rkrsn/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+eval "$(direnv hook zsh)"
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"

@@ -27,6 +27,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 
 | Path | Purpose |
 | --- | --- |
+| `.zshrc.macos` | macOS Zsh config with credentials removed |
 | `.config/ghostty/` | Ghostty config, six active shaders, palettes, and SSH launcher |
 | `.config/zellij/` | Local Zellij config, themes, layout, and zjstatus plugin |
 | `.local/share/fonts/DepartureMono/` | Departure Mono 1.500 and its license |
@@ -52,7 +53,9 @@ Copy the repository config into the active Ghostty config file.
 Avoid conflicting copies of `config` and `config.ghostty`.
 
 Copy `.config/zellij/` into `~/.config/zellij/`.
-Replace the existing local Zellij auto-start block in `~/.zshrc` with `macos/zellij-auto-attach.zsh`.
+Copy `.zshrc.macos` to `~/.zshrc` for the full macOS shell config.
+Set API keys in your local environment.
+To keep your existing `~/.zshrc`, replace only its Zellij auto-start block with `macos/zellij-auto-attach.zsh`.
 Do not keep or source both auto-start blocks.
 The block selects separate sessions for terminal applications, Claude, Codex, VS Code, and other hosts.
 It serializes startup and attaches a real client immediately so the first tab initializes its tab bar.
