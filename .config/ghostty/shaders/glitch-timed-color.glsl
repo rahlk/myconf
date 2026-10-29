@@ -102,6 +102,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 uv = fragCoord / iResolution.xy;
     float t = iTime;
+    // Metal's Y axis points down: keep the Zellij tab row stationary at the top.
+    float bodyWeight = smoothstep(96.0, max(192.0, iResolution.y * 0.10),
+                                 fragCoord.y);
 
     // Burst gaps: 60-300 seconds. Each burst lasts half a second.
     float burstAge = eventAge(t, 180., 120., 17.3);
@@ -111,19 +114,32 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
     vec2 st = vec2(0.);
 
-    // analog distortion
+    // Slower analog wobble instead of rapid per-frame noise.
     float y = uv.y * iResolution.y;
-    float distortion = gnoise(vec3(0., y * .01, t * 500.)) * (glitchAmount * 4. + .1);
-    distortion *= gnoise(vec3(0., y * .02, t * 250.)) * (glitchAmount * 2. + .025);
+    float distortion = gnoise(vec3(0., y * .01, t * 8.)) * .1;
+    distortion *= gnoise(vec3(0., y * .02, t * 4.)) * .025;
     // Slowly drift between random levels rather than flickering per frame.
     // The multiplier ranges from 0.75x to 1.75x the current jitter strength.
-    float driftTime = t / 5.0;
+    float driftTime = t / 20.0;
     float driftSlot = floor(driftTime);
     float driftBlend = smoothstep(0.0, 1.0, fract(driftTime));
     float drift = mix(eventRandom(driftSlot, 313.7),
                       eventRandom(driftSlot + 1.0, 313.7), driftBlend);
-    float jitterStrength = 0.3375 * mix(0.75, 1.75, drift);
+    float driftMultiplier = mix(0.75, 1.75, drift);
+    float jitterStrength = 0.08019 * driftMultiplier;
     distortion *= jitterStrength;
+    // Limit only the continuous shimmer, before adding bursts and moving bands.
+    float maxJitter = 0.594 / iResolution.x;
+    distortion = clamp(distortion, -maxJitter, maxJitter);
+
+    // Restore the original burst shake independently of the subtle shimmer.
+    // Subtracting the baseline leaves 8*g*g + 0.3*g, which fades to zero.
+    if (glitchAmount > 0.) {
+        float burstNoise = gnoise(vec3(0., y * .01, t * 500.))
+                         * gnoise(vec3(0., y * .02, t * 250.));
+        float burstStrength = 8. * glitchAmount * glitchAmount + .3 * glitchAmount;
+        distortion += burstNoise * burstStrength * .3375 * driftMultiplier;
+    }
 
     // Independent band gaps: 20-40 seconds, moving bottom to top.
     float bandAge = eventAge(t, 30., 10., 83.7);
@@ -132,8 +148,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         // Select one or three bands once per event, not once per frame.
         float eventSlot = floor((t - bandAge + 0.001) / 30.);
         int bandCount = eventRandom(eventSlot, 151.9) < 0.5 ? 1 : 3;
+        // Wider feathering softens the sweep edges between frames.
         // Each pass lasts 1.5 seconds, with starts 0.25s apart.
-        // The leading pass remains aligned with the CRT bloom reset.
         for (int i = 0; i < 3; i++) {
             if (i >= bandCount) break;
             float age = bandAge - float(i) * 0.25;
@@ -141,18 +157,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                 float progress = age / 1.5;
                 float center = mix(-.05, 1.05, progress);
                 float envelope = sin(3.14159265359 * progress);
-                float stripe = (1. - smoothstep(.003, .016, abs(uv.y - center))) * envelope;
-                stripe -= (1. - smoothstep(.003, .016, abs(uv.y - center + .04))) * envelope;
+                float stripe = (1. - smoothstep(.003, .024, abs(uv.y - center))) * envelope;
+                stripe -= (1. - smoothstep(.003, .024, abs(uv.y - center + .04))) * envelope;
                 band += stripe;
             }
         }
         distortion += band * .02;
     }
+    distortion *= bodyWeight;
     st = uv + vec2(distortion, 0.);
     // Restore RGB splitting during bursts and passing bands, without noise.
     vec2 edge = vec2(0.5) / iResolution.xy;
-    float activity = max(glitchAmount, abs(band));
-    vec2 split = vec2(5. / iResolution.x + abs(distortion) * .25, 0.) * activity;
+    float activity = clamp(max(glitchAmount, abs(band)), 0., 1.);
+    vec2 split = vec2(5. / iResolution.x + abs(distortion) * .25, 0.) * activity * bodyWeight;
     vec3 col;
     col.r = textureLod(iChannel0, clamp(st + split, edge, vec2(1.0) - edge), 0.).r;
     col.g = textureLod(iChannel0, clamp(st, edge, vec2(1.0) - edge), 0.).g;

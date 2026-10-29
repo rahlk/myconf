@@ -13,9 +13,10 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - The Ubuntu theme remains available as an optional orange palette.
 - Local font: PxPlus IBM VGA 8x16 at size 18, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
-- Flat CRT screen, scan lines, background glow, and no text bloom.
+- Curved CRT screen, Gaussian scan lines, background glow, and 3px phosphor bloom.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
-- Light continuous jitter and 0.5-second bursts at random 1–5 minute intervals.
+- Slow continuous jitter drifts between random levels, capped at 0.594 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
+- The top 48px remains flat. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
 - One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
 - The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The green Powerline bar shows the session in green on black, gray tabs, a bright green active tab, then time and date.
@@ -26,7 +27,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 
 | Path | Purpose |
 | --- | --- |
-| `.config/ghostty/` | Ghostty config, five active shaders, palettes, and SSH launcher |
+| `.config/ghostty/` | Ghostty config, six active shaders, palettes, and SSH launcher |
 | `.config/zellij/` | Local Zellij config, themes, layout, and zjstatus plugin |
 | `.local/share/fonts/DepartureMono/` | Departure Mono 1.500 and its license |
 | `macos/zellij-auto-attach.zsh` | Host-aware Zsh auto-attach block for local Zellij sessions |
@@ -34,13 +35,14 @@ The session ends square. Tab arrows join directly to the next segment without ba
 | `remote/.config/zellij/` | Orange SSH theme and bottom tab-bar layout |
 | `remote/ssh-zellij.zsh` | Remote Zsh auto-start block for local and SSH Zellij sessions |
 
-Only the five active shaders are included, with stable filenames. Ghostty runs them in this order:
+Only the six active shaders are included, with stable filenames. Ghostty runs them in this order:
 
 1. `block-cursor-halo.glsl`
 2. `glitch-timed-color.glsl`
 3. `crt-no-bloom.glsl`
 4. `phosphor-vivid.glsl`
 5. `crt-finish.glsl`
+6. `phosphor-bloom.glsl`
 
 ## Restore on macOS
 

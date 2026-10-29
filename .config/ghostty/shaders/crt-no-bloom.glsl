@@ -62,7 +62,7 @@
 // Recommended values:
 //  o High DPI displays: 0.33333333
 //  - Low DPI displays:  0.66666666
-#define SCALE 0.25
+#define SCALE (1.0 / 4.0)
 
 // "Tube" warp
 #define CRTS_WARP 1
@@ -288,17 +288,26 @@ vec3 ToSrgb(vec3 c) {
     ToSrgb1(c.r), ToSrgb1(c.g), ToSrgb1(c.b));
 }
 
-// Flat CRT scan lines, with no text bloom.
+// Curved CRT scan lines; phosphor bloom is applied in the final pass.
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  // Flat screen: sample text at its original coordinates.
-  // Curvature disabled; use this block instead of the flat UV line to restore it.
-  // float aspect = iResolution.x / iResolution.y;
-  // vec2 pos = fragCoord / iResolution.xy * 2.0 - 1.0;
-  // pos *= vec2(1.0 + pos.y * pos.y / (50.0 * aspect),
-  //             1.0 + pos.x * pos.x / 50.0);
-  // vec2 uv = pos * 0.5 + 0.5;
+  // One 36px VGA tab row plus padding at font-size 18 on the Retina display.
+  // Metal's Y axis points down; keep this strip flat for mouse alignment.
+  float headerHeight = min(48.0, iResolution.y);
   vec2 uv = fragCoord / iResolution.xy;
-  if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) {
+  vec2 boundsUV = uv;
+  if (fragCoord.y >= headerHeight) {
+    // Curve the remaining viewport symmetrically about its own center.
+    vec2 bodySize = vec2(iResolution.x, max(1.0, iResolution.y - headerHeight));
+    vec2 pos = vec2(fragCoord.x, fragCoord.y - headerHeight) / bodySize * 2.0 - 1.0;
+    float bodyAspect = bodySize.x / bodySize.y;
+    pos *= vec2(1.0 + pos.y * pos.y / (50.0 * bodyAspect),
+                1.0 + pos.x * pos.x / 50.0);
+    boundsUV = pos * 0.5 + 0.5;
+    uv = vec2(boundsUV.x, (headerHeight + boundsUV.y * bodySize.y) / iResolution.y);
+    // Keep bilinear sampling inside the body, avoiding a copy of the tab strip.
+    uv.y = max(uv.y, (headerHeight + 0.5) / iResolution.y);
+  }
+  if (any(lessThan(boundsUV, vec2(0.0))) || any(greaterThan(boundsUV, vec2(1.0)))) {
     fragColor = vec4(0.0, 0.0, 0.0, 1.0);
     return;
   }
@@ -316,7 +325,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   bool lightSurface = backgroundLuminance > 0.5;
   if (lightSurface) {
     // Four physical pixels per scanline cycle.
-    scanline = 0.94 + 0.06 * cos(6.28318530718 * uv.y * iResolution.y * SCALE);
+    // Brighter phosphor widens the Gaussian beam from 1.2 to 1.5 physical pixels.
+    float brightness = clamp(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.0, 1.0);
+    float beamWidth = mix(1.2, 1.5, smoothstep(0.10, 0.90, brightness));
+    float beamDistance = (fract(uv.y * iResolution.y * SCALE + 0.5) - 0.5) / SCALE;
+    float beam = exp(-0.5 * beamDistance * beamDistance / (beamWidth * beamWidth));
+    scanline = 0.88 + 0.12 * beam;
     mask = vec3(1.0);
   }
   vec3 core = color.rgb * scanline * mask;

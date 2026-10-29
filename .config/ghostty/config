@@ -20,11 +20,13 @@ background-blur = false
 custom-shader = shaders/block-cursor-halo.glsl
 # Continuous light jitter; occasional random bursts and bands with RGB splitting.
 custom-shader = shaders/glitch-timed-color.glsl
-# Flat CRT screen and scan lines, without text bloom.
+# Curved CRT screen and scan lines.
 custom-shader = shaders/crt-no-bloom.glsl
 # Bright monochrome text for the green and Ubuntu profiles.
 custom-shader = shaders/phosphor-vivid.glsl
 custom-shader = shaders/crt-finish.glsl
+# A 3px phosphor glow softens bright text and scanline gaps.
+custom-shader = shaders/phosphor-bloom.glsl
 custom-shader-animation = true
 
 # Merge tabs into the title bar when window decorations are enabled.
@@ -33,19 +35,21 @@ macos-titlebar-style = tabs
 # Remove the native window frame and shadow.
 window-decoration = none
 macos-window-shadow = false
+# Distribute leftover terminal-cell space evenly around the window.
+window-padding-balance = true
 
 # macOS service "Open Stagger Juice SSH Tab" handles Cmd+Shift+T.
 # Leave the key free for the service instead of typing into the terminal.
 keybind = super+shift+t=unbind
 
 # Toggle the drop-down terminal from any application.
-keybind = global:ctrl+backquote=toggle_quick_terminal
+keybind = global:ctrl+f12=toggle_quick_terminal
 quick-terminal-position = top
 
 # Turn off drop-down window animation
 
 quick-terminal-size = 100%,100%
 
-fullscreen = non-native
+fullscreen = non-native-padded-notch
 
-macos-non-native-fullscreen = true
+macos-non-native-fullscreen = padded-notch

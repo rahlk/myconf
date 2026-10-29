@@ -23,10 +23,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if (intensity <= backgroundPeak + 0.002) {
         if (red) {
             vec2 pos = fragCoord / iResolution.xy * 2.0 - 1.0;
-            // Curved background bounds disabled.
-            // float aspect = iResolution.x / iResolution.y;
-            // pos *= vec2(1.0 + pos.y * pos.y / (50.0 * aspect),
-            //             1.0 + pos.x * pos.x / 50.0);
+            float aspect = iResolution.x / iResolution.y;
+            pos *= vec2(1.0 + pos.y * pos.y / (50.0 * aspect),
+                        1.0 + pos.x * pos.x / 50.0);
             if (all(lessThanEqual(abs(pos), vec2(1.0)))) {
                 float shade = backgroundPeak > 0.001 ? clamp(intensity / backgroundPeak, 0.0, 1.0) : 1.0;
                 fragColor.rgb = background * shade;
