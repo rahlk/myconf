@@ -62,7 +62,7 @@
 // Recommended values:
 //  o High DPI displays: 0.33333333
 //  - Low DPI displays:  0.66666666
-#define SCALE (1.0 / 4.0)
+#define SCALE (1.0 / 6.0)
 
 // "Tube" warp
 #define CRTS_WARP 1
@@ -288,29 +288,9 @@ vec3 ToSrgb(vec3 c) {
     ToSrgb1(c.r), ToSrgb1(c.g), ToSrgb1(c.b));
 }
 
-// Curved CRT scan lines; phosphor bloom is applied in the final pass.
+// Flat CRT scan lines; phosphor bloom is applied in the final pass.
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  // One 36px VGA tab row plus padding at font-size 18 on the Retina display.
-  // Metal's Y axis points down; keep this strip flat for mouse alignment.
-  float headerHeight = min(48.0, iResolution.y);
   vec2 uv = fragCoord / iResolution.xy;
-  vec2 boundsUV = uv;
-  if (fragCoord.y >= headerHeight) {
-    // Curve the remaining viewport symmetrically about its own center.
-    vec2 bodySize = vec2(iResolution.x, max(1.0, iResolution.y - headerHeight));
-    vec2 pos = vec2(fragCoord.x, fragCoord.y - headerHeight) / bodySize * 2.0 - 1.0;
-    float bodyAspect = bodySize.x / bodySize.y;
-    pos *= vec2(1.0 + pos.y * pos.y / (50.0 * bodyAspect),
-                1.0 + pos.x * pos.x / 50.0);
-    boundsUV = pos * 0.5 + 0.5;
-    uv = vec2(boundsUV.x, (headerHeight + boundsUV.y * bodySize.y) / iResolution.y);
-    // Keep bilinear sampling inside the body, avoiding a copy of the tab strip.
-    uv.y = max(uv.y, (headerHeight + 0.5) / iResolution.y);
-  }
-  if (any(lessThan(boundsUV, vec2(0.0))) || any(greaterThan(boundsUV, vec2(1.0)))) {
-    fragColor = vec4(0.0, 0.0, 0.0, 1.0);
-    return;
-  }
   vec4 color = texture(iChannel0, uv);
   // Blur strength increased by 20%, from 0.10 to 0.12.
   vec2 pixel = vec2(1.0 / iResolution.x, 0.0);
@@ -324,10 +304,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float backgroundLuminance = dot(iBackgroundColor, vec3(0.2126, 0.7152, 0.0722));
   bool lightSurface = backgroundLuminance > 0.5;
   if (lightSurface) {
-    // Four physical pixels per scanline cycle.
-    // Brighter phosphor widens the Gaussian beam from 1.2 to 1.5 physical pixels.
+    // Six physical pixels per scanline cycle, matching the dark-theme pass.
+    // Bright segments have wider beams and narrower dark gaps.
     float brightness = clamp(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.0, 1.0);
-    float beamWidth = mix(1.2, 1.5, smoothstep(0.10, 0.90, brightness));
+    float beamWidth = mix(0.30, 0.375, smoothstep(0.10, 0.90, brightness)) / SCALE;
     float beamDistance = (fract(uv.y * iResolution.y * SCALE + 0.5) - 0.5) / SCALE;
     float beam = exp(-0.5 * beamDistance * beamDistance / (beamWidth * beamWidth));
     scanline = 0.88 + 0.12 * beam;

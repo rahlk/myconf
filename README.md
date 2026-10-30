@@ -11,13 +11,15 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
 - The Ubuntu theme remains available as an optional orange palette.
-- Local font: PxPlus IBM VGA 8x16 at size 18, with Maple Mono NF for Nerd Font symbols.
+- Local font: PxPlus IBM VGA 8x16 at size 16, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
-- Curved CRT screen, Gaussian scan lines, background glow, and 3px phosphor bloom.
+- Curved CRT screen including the Zellij tab bar, 6px Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom.
+- Rapid 26.3 Hz brightness flutter includes random variation at 54 samples per second, with brightness modulation bounded by ±7.5%. Phosphor glow intensity and spread vary in sync.
+- Background rings repeat every 3 physical pixels and are drawn after curvature with pixel filtering to reduce moiré.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
-- Slow continuous jitter drifts between random levels, capped at 0.594 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
-- The top 48px remains flat. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
-- One or three bands move from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
+- Slow continuous jitter drifts between random levels, capped at 0.9504 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
+- Curvature applies across the whole screen. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
+- One band moves from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
 - The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The green Powerline bar shows the session in green on black, gray tabs, a bright green active tab, then time and date.
 With CRT Blue, the session uses white text on teal, and the empty bar background is teal.
@@ -28,7 +30,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 | Path | Purpose |
 | --- | --- |
 | `.zshrc.macos` | macOS Zsh config with credentials removed |
-| `.config/ghostty/` | Ghostty config, six active shaders, palettes, and SSH launcher |
+| `.config/ghostty/` | Ghostty config, seven active shaders, palettes, and SSH launcher |
 | `.config/zellij/` | Local Zellij config, themes, layout, and zjstatus plugin |
 | `.local/share/fonts/DepartureMono/` | Departure Mono 1.500 and its license |
 | `macos/zellij-auto-attach.zsh` | Host-aware Zsh auto-attach block for local Zellij sessions |
@@ -36,7 +38,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 | `remote/.config/zellij/` | Orange SSH theme and bottom tab-bar layout |
 | `remote/ssh-zellij.zsh` | Remote Zsh auto-start block for local and SSH Zellij sessions |
 
-Only the six active shaders are included, with stable filenames. Ghostty runs them in this order:
+Only the seven active shaders are included, with stable filenames. Ghostty runs them in this order:
 
 1. `block-cursor-halo.glsl`
 2. `glitch-timed-color.glsl`
@@ -44,11 +46,12 @@ Only the six active shaders are included, with stable filenames. Ghostty runs th
 4. `phosphor-vivid.glsl`
 5. `crt-finish.glsl`
 6. `phosphor-bloom.glsl`
+7. `crt-curvature.glsl`
 
 ## Restore on macOS
 
 Copy the shaders, themes, and SSH launcher from `.config/ghostty/` into `~/.config/ghostty/`.
-The repository uses the filename `config`. The current installation uses `config.ghostty`.
+The repository and current installation both use the filename `config`.
 Copy the repository config into the active Ghostty config file.
 Avoid conflicting copies of `config` and `config.ghostty`.
 

@@ -126,11 +126,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float drift = mix(eventRandom(driftSlot, 313.7),
                       eventRandom(driftSlot + 1.0, 313.7), driftBlend);
     float driftMultiplier = mix(0.75, 1.75, drift);
-    float jitterStrength = 0.08019 * driftMultiplier;
+    float jitterStrength = 0.128304 * driftMultiplier;
     distortion *= jitterStrength;
     // Limit only the continuous shimmer, before adding bursts and moving bands.
-    float maxJitter = 0.594 / iResolution.x;
+    float maxJitter = 0.9504 / iResolution.x;
     distortion = clamp(distortion, -maxJitter, maxJitter);
+    // Couple beam intensity to the continuous wobble, with a +/-2.5% limit.
+    // Capture it before bursts and bands so those cannot cause bright flashes.
+    float brightnessFlutter = 1.0 + 0.025 * (distortion / maxJitter) * bodyWeight;
 
     // Restore the original burst shake independently of the subtle shimmer.
     // Subtracting the baseline leaves 8*g*g + 0.3*g, which fades to zero.
@@ -145,14 +148,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float bandAge = eventAge(t, 30., 10., 83.7);
     float band = 0.;
     if (bandAge >= 0. && bandAge < 2.0) {
-        // Select one or three bands once per event, not once per frame.
-        float eventSlot = floor((t - bandAge + 0.001) / 30.);
-        int bandCount = eventRandom(eventSlot, 151.9) < 0.5 ? 1 : 3;
         // Wider feathering softens the sweep edges between frames.
-        // Each pass lasts 1.5 seconds, with starts 0.25s apart.
-        for (int i = 0; i < 3; i++) {
-            if (i >= bandCount) break;
-            float age = bandAge - float(i) * 0.25;
+        // A single moving band per event, lasting 1.5 seconds.
+        {
+            float age = bandAge;
             if (age >= 0. && age < 1.5) {
                 float progress = age / 1.5;
                 float center = mix(-.05, 1.05, progress);
@@ -174,5 +173,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col.r = textureLod(iChannel0, clamp(st + split, edge, vec2(1.0) - edge), 0.).r;
     col.g = textureLod(iChannel0, clamp(st, edge, vec2(1.0) - edge), 0.).g;
     col.b = textureLod(iChannel0, clamp(st - split, edge, vec2(1.0) - edge), 0.).b;
-    fragColor = vec4(col, 1.);
+    fragColor = vec4(col * brightnessFlutter, 1.);
 }
