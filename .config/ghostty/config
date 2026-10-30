@@ -22,9 +22,9 @@ custom-shader = shaders/crt-no-bloom.glsl
 custom-shader = shaders/phosphor-vivid.glsl
 custom-shader = shaders/crt-finish.glsl
 # A 3px phosphor glow softens bright text and scanline gaps.
-custom-shader = shaders/phosphor-bloom.glsl
+custom-shader = shaders/phosphor-bloom-v2.glsl
 # Curve the entire finished image, including the Zellij tab bar.
-custom-shader = shaders/crt-curvature.glsl
+custom-shader = shaders/crt-curvature-v2.glsl
 custom-shader-animation = true
 
 # Merge tabs into the title bar when window decorations are enabled.

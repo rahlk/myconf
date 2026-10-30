@@ -48,9 +48,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float strength = mix(flickerRandom(strengthSlot, 47.1),
                          flickerRandom(strengthSlot + 1.0, 47.1),
                          smoothstep(0.0, 1.0, fract(strengthTime)));
-    float flutter = 0.035 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
-                  + 0.040 * noise;
-    float flicker = 1.0 + flutter * mix(0.6, 1.0, strength);
+    float flutter = 0.12 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
+                  + 0.10 * noise;
+    float flicker = 1.0 + flutter * mix(0.8, 1.0, strength);
     fragColor.rgb *= flicker;
     // Black outside the curved tube; feather its edge over one physical pixel.
     vec2 coverage = clamp((vec2(1.0) - abs(position)) * iResolution.xy * 0.5,

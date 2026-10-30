@@ -32,11 +32,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float strength = mix(flickerRandom(strengthSlot, 47.1),
                          flickerRandom(strengthSlot + 1.0, 47.1),
                          smoothstep(0.0, 1.0, fract(strengthTime)));
-    float flutter = 0.035 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
-                  + 0.040 * noise;
-    float flicker = 1.0 + flutter * mix(0.6, 1.0, strength);
+    float flutter = 0.12 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
+                  + 0.10 * noise;
+    float flicker = 1.0 + flutter * mix(0.8, 1.0, strength);
     float glowFlutter = flicker - 1.0;
-    vec2 spread = vec2(BLOOM_RADIUS * 0.5 * (1.0 + 6.0 * glowFlutter)) / iResolution.xy;
+    vec2 spread = vec2(BLOOM_RADIUS * 0.5 * clamp(1.0 + 2.0 * glowFlutter, 0.55, 1.45)) / iResolution.xy;
     vec3 bloom = vec3(0.0);
     // A normalized 5x5 Gaussian kernel spreads light without blurring the original text.
     for (int y = -2; y <= 2; y++) {
@@ -46,5 +46,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         }
     }
     bloom /= 256.0;
-    fragColor.rgb += BLOOM_STRENGTH * (1.0 + 12.0 * glowFlutter) * bloom * (vec3(1.0) - clamp(fragColor.rgb, 0.0, 1.0));
+    fragColor.rgb += BLOOM_STRENGTH * clamp(1.0 + 4.0 * glowFlutter, 0.15, 1.9) * bloom * (vec3(1.0) - clamp(fragColor.rgb, 0.0, 1.0));
 }

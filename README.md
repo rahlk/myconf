@@ -14,7 +14,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Local font: PxPlus IBM VGA 8x16 at size 16, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
 - Curved CRT screen including the Zellij tab bar, 6px Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom.
-- Rapid 26.3 Hz brightness flutter includes random variation at 54 samples per second, with brightness modulation bounded by ±7.5%. Phosphor glow intensity and spread vary in sync.
+- Rapid 26.3 Hz brightness flutter includes random variation at 54 samples per second, with brightness modulation bounded by ±22%. Phosphor glow intensity and spread vary in sync.
 - Background rings repeat every 3 physical pixels and are drawn after curvature with pixel filtering to reduce moiré.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
 - Slow continuous jitter drifts between random levels, capped at 0.9504 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
@@ -45,8 +45,8 @@ Only the seven active shaders are included, with stable filenames. Ghostty runs 
 3. `crt-no-bloom.glsl`
 4. `phosphor-vivid.glsl`
 5. `crt-finish.glsl`
-6. `phosphor-bloom.glsl`
-7. `crt-curvature.glsl`
+6. `phosphor-bloom-v2.glsl`
+7. `crt-curvature-v2.glsl`
 
 ## Restore on macOS
 
