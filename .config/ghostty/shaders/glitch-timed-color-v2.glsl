@@ -126,10 +126,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float drift = mix(eventRandom(driftSlot, 313.7),
                       eventRandom(driftSlot + 1.0, 313.7), driftBlend);
     float driftMultiplier = mix(0.75, 1.75, drift);
-    float jitterStrength = 0.128304 * driftMultiplier;
+    float jitterStrength = 0.032076 * driftMultiplier;
     distortion *= jitterStrength;
     // Limit only the continuous shimmer, before adding bursts and moving bands.
-    float maxJitter = 0.9504 / iResolution.x;
+    float maxJitter = 0.2376 / iResolution.x;
     distortion = clamp(distortion, -maxJitter, maxJitter);
     // Couple beam intensity to the continuous wobble, with a +/-2.5% limit.
     // Capture it before bursts and bands so those cannot cause bright flashes.

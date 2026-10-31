@@ -17,7 +17,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Rapid 26.3 Hz brightness flutter includes random variation at 54 samples per second, with brightness modulation bounded by ±22%. Phosphor glow intensity and spread vary in sync.
 - Background rings repeat every 3 physical pixels and are drawn in the final overlay with pixel filtering to reduce moiré.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
-- Slow continuous jitter drifts between random levels, capped at 0.9504 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
+- Slow continuous jitter drifts between random levels, capped at 0.2376 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
 - Curvature is disabled because shader warping does not remap mouse coordinates. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
 - One band moves from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
@@ -41,7 +41,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 Only the seven active shaders are included, with stable filenames. Ghostty runs them in this order:
 
 1. `block-cursor-halo.glsl`
-2. `glitch-timed-color.glsl`
+2. `glitch-timed-color-v2.glsl`
 3. `crt-texture-v2.glsl`
 4. `phosphor-vivid-v2.glsl`
 5. `crt-finish-v2.glsl`

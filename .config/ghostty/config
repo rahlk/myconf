@@ -15,7 +15,7 @@ background-blur = false
 
 custom-shader = shaders/block-cursor-halo.glsl
 # Analog jitter with subtle brightness flutter; occasional bursts and RGB bands.
-custom-shader = shaders/glitch-timed-color.glsl
+custom-shader = shaders/glitch-timed-color-v2.glsl
 # CRT scan lines and phosphor mask.
 custom-shader = shaders/crt-texture-v2.glsl
 # Bright monochrome text for the green and Ubuntu profiles.
