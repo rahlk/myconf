@@ -32,8 +32,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float strength = mix(flickerRandom(strengthSlot, 47.1),
                          flickerRandom(strengthSlot + 1.0, 47.1),
                          smoothstep(0.0, 1.0, fract(strengthTime)));
-    float flutter = 0.12 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
-                  + 0.10 * noise;
+    float flutter = 0.024 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
+                  + 0.020 * noise;
     float flicker = 1.0 + flutter * mix(0.8, 1.0, strength);
     float glowFlutter = flicker - 1.0;
     vec2 spread = vec2(BLOOM_RADIUS * 0.5 * clamp(1.0 + 2.0 * glowFlutter, 0.55, 1.45)) / iResolution.xy;

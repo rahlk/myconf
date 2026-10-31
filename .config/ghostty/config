@@ -22,9 +22,9 @@ custom-shader = shaders/crt-texture-v2.glsl
 custom-shader = shaders/phosphor-vivid-v2.glsl
 custom-shader = shaders/crt-finish-v2.glsl
 # A 3px phosphor glow softens bright text and scanline gaps.
-custom-shader = shaders/phosphor-bloom-v2.glsl
+custom-shader = shaders/phosphor-bloom-v3.glsl
 # Flat final overlay keeps mouse coordinates aligned with text and tabs.
-custom-shader = shaders/crt-overlay-v4.glsl
+custom-shader = shaders/crt-overlay-v5.glsl
 custom-shader-animation = true
 
 # Merge tabs into the title bar when window decorations are enabled.
