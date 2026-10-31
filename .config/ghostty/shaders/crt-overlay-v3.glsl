@@ -1,4 +1,4 @@
-// Curve the complete CRT image, then draw antialiased rings without resampling.
+// Flat CRT overlay preserves mouse alignment; rings and flicker use output pixels.
 float ringPixelFilter(float phaseStep) {
     float halfStep = phaseStep * 0.5;
     return abs(halfStep) < 0.0001 ? 1.0 : sin(halfStep) / halfStep;
@@ -9,14 +9,9 @@ float flickerRandom(float index, float seed) {
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 position = fragCoord / iResolution.xy * 2.0 - 1.0;
-    float aspect = iResolution.x / iResolution.y;
-    position *= vec2(1.0 + position.y * position.y / (50.0 * aspect),
-                     1.0 + position.x * position.x / 50.0);
-    vec2 uv = position * 0.5 + 0.5;
-    vec2 edge = vec2(0.5) / iResolution.xy;
-    fragColor = texture(iChannel0, clamp(uv, edge, vec2(1.0) - edge));
-    // Generate rings in output pixels, after scanlines, bloom, and curvature.
+    vec2 uv = fragCoord / iResolution.xy;
+    fragColor = texture(iChannel0, uv);
+    // Generate rings in output pixels, after scanlines and bloom.
     vec2 centered = fragCoord - iResolution.xy * 0.5;
     float radius = length(centered);
     float screenSize = min(iResolution.x, iResolution.y);
@@ -52,8 +47,4 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
                   + 0.10 * noise;
     float flicker = 1.0 + flutter * mix(0.8, 1.0, strength);
     fragColor.rgb *= flicker;
-    // Black outside the curved tube; feather its edge over one physical pixel.
-    vec2 coverage = clamp((vec2(1.0) - abs(position)) * iResolution.xy * 0.5,
-                          vec2(0.0), vec2(1.0));
-    fragColor.rgb *= coverage.x * coverage.y;
 }
