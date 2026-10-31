@@ -24,7 +24,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         fragColor.rgb *= 0.72 + 0.28 * beam;
     }
     float distanceFromCenter = dot(position, position) * 0.5;
-    fragColor.rgb *= 1.0 - VIGNETTE_STRENGTH * smoothstep(0.12, 1.0, distanceFromCenter);
+    float vignetteStrength = backgroundLuminance > 0.5 ? 0.035 : VIGNETTE_STRENGTH;
+    fragColor.rgb *= 1.0 - vignetteStrength * smoothstep(0.12, 1.0, distanceFromCenter);
     if (whiteOnBlue) {
         // Double white text after CRT attenuation, capped at display white.
         vec3 color = clamp(fragColor.rgb, 0.0, 1.0);

@@ -46,5 +46,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float flutter = 0.12 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
                   + 0.10 * noise;
     float flicker = 1.0 + flutter * mix(0.8, 1.0, strength);
-    fragColor.rgb *= flicker;
+    // Keep white paper stable while retaining a faint light-mode flutter.
+    float backgroundLuminance = dot(iBackgroundColor, vec3(0.2126, 0.7152, 0.0722));
+    fragColor.rgb *= backgroundLuminance > 0.5 ? mix(1.0, flicker, 0.15) : flicker;
 }

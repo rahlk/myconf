@@ -304,14 +304,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float backgroundLuminance = dot(iBackgroundColor, vec3(0.2126, 0.7152, 0.0722));
   bool lightSurface = backgroundLuminance > 0.5;
   if (lightSurface) {
-    // Six physical pixels per scanline cycle, matching the dark-theme pass.
+    // Fine white-paper CRT texture, independent of the dark-theme scanlines.
+    float lightPitch = 3.0;
     // Bright segments have wider beams and narrower dark gaps.
     float brightness = clamp(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.0, 1.0);
-    float beamWidth = mix(0.30, 0.375, smoothstep(0.10, 0.90, brightness)) / SCALE;
-    float beamDistance = (fract(uv.y * iResolution.y * SCALE + 0.5) - 0.5) / SCALE;
+    float beamWidth = lightPitch * mix(0.30, 0.375, smoothstep(0.10, 0.90, brightness));
+    float beamDistance = (fract(fragCoord.y / lightPitch + 0.5) - 0.5) * lightPitch;
     float beam = exp(-0.5 * beamDistance * beamDistance / (beamWidth * beamWidth));
-    scanline = 0.88 + 0.12 * beam;
-    mask = vec3(1.0);
+    scanline = 0.94 + 0.06 * beam;
+    mask = vec3(0.99 + 0.01 * cos(6.28318530718 * fragCoord.x / lightPitch));
   }
   vec3 core = color.rgb * scanline * mask;
   fragColor = vec4(clamp(core, 0.0, 1.0), color.a);

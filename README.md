@@ -4,9 +4,9 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 
 ## Terminal appearance
 
-- Local Ghostty follows the system appearance: CRT Blue in light mode and Retro Green in dark mode.
-- CRT Blue uses DOS colors with a brighter royal blue background (`#1C32C7`) and bright white text (`#FFFFFF`).
-- The DOS appearance includes gray menus and white borders, with red, yellow, and cyan ANSI accents.
+- Local Ghostty follows the system appearance: CRT GitHub Light in light mode and Retro Green in dark mode.
+- CRT GitHub Light uses the bundled GitHub Light High Contrast palette: white background, dark ink, blue links, and red errors, with a fine 3px CRT texture and gentle vignette.
+- Light mode preserves ANSI colors and reduces the screen flicker to 15% of dark-mode amplitude. The IBM VGA font is shared across both appearances.
 - Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
@@ -42,11 +42,11 @@ Only the seven active shaders are included, with stable filenames. Ghostty runs 
 
 1. `block-cursor-halo.glsl`
 2. `glitch-timed-color.glsl`
-3. `crt-no-bloom.glsl`
-4. `phosphor-vivid.glsl`
-5. `crt-finish.glsl`
+3. `crt-texture-v2.glsl`
+4. `phosphor-vivid-v2.glsl`
+5. `crt-finish-v2.glsl`
 6. `phosphor-bloom-v2.glsl`
-7. `crt-overlay-v3.glsl`
+7. `crt-overlay-v4.glsl`
 
 ## Restore on macOS
 

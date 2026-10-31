@@ -1,13 +1,10 @@
-// Shared CRT brightness for green/red profiles; grayscale for the light theme.
+// Shared CRT brightness for green/red profiles; preserve light-theme colors.
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor = texture(iChannel0, fragCoord / iResolution.xy);
     float backgroundPeak = max(iBackgroundColor.r, max(iBackgroundColor.g, iBackgroundColor.b));
     float backgroundLuminance = dot(iBackgroundColor, vec3(0.2126, 0.7152, 0.0722));
-    if (backgroundLuminance > 0.5) {
-        float gray = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-        fragColor.rgb = vec3(gray) * iBackgroundColor / backgroundPeak;
-        return;
-    }
+    // Preserve the GitHub light palette, including colored links and errors.
+    if (backgroundLuminance > 0.5) return;
     bool green = iForegroundColor.g > iForegroundColor.r * 1.25 &&
                  iForegroundColor.g > iForegroundColor.b * 1.25;
     bool red = iForegroundColor.r > iForegroundColor.g * 1.25;
