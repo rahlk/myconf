@@ -17,7 +17,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Flat CRT screen with aligned mouse reporting, 6px Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom.
 - Background rings repeat every 3 physical pixels and are drawn in the final overlay with pixel filtering to reduce moiré.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
-- Slow continuous jitter drifts between random levels, capped at 0.2376 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
+- Slow continuous jitter drifts between random levels, capped at 0.1188 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
 - Curvature is disabled because shader warping does not remap mouse coordinates. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
 - One band moves from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
@@ -41,7 +41,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 Only the seven active shaders are included, with stable filenames. Ghostty runs them in this order:
 
 1. `block-cursor-halo.glsl`
-2. `glitch-steady-light.glsl`
+2. `glitch-steady-light-v2.glsl`
 3. `crt-texture-v2.glsl`
 4. `phosphor-vivid-v2.glsl`
 5. `crt-finish-v2.glsl`

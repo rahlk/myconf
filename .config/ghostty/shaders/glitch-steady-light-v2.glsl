@@ -126,10 +126,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float drift = mix(eventRandom(driftSlot, 313.7),
                       eventRandom(driftSlot + 1.0, 313.7), driftBlend);
     float driftMultiplier = mix(0.75, 1.75, drift);
-    float jitterStrength = 0.032076 * driftMultiplier;
+    float jitterStrength = 0.016038 * driftMultiplier;
     distortion *= jitterStrength;
     // Limit only the continuous shimmer, before adding bursts and moving bands.
-    float maxJitter = 0.2376 / iResolution.x;
+    float maxJitter = 0.1188 / iResolution.x;
     distortion = clamp(distortion, -maxJitter, maxJitter);
     // Restore the original burst shake independently of the subtle shimmer.
     // Subtracting the baseline leaves 8*g*g + 0.3*g, which fades to zero.
