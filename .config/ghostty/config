@@ -1,5 +1,5 @@
 # Follow the system appearance with matching CRT palettes.
-theme = light:CRT GitHub Light,dark:Retro Green
+theme = light:CRT Blue,dark:Retro Green
 
 cursor-style = underline
 cursor-style-blink = true

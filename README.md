@@ -4,8 +4,9 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 
 ## Terminal appearance
 
-- Local Ghostty follows the system appearance: CRT GitHub Light in light mode and Retro Green in dark mode.
-- CRT GitHub Light uses the bundled GitHub Light High Contrast palette: white background, dark ink, blue links, and red errors, with a fine 3px CRT texture and gentle vignette.
+- Local Ghostty follows the system appearance: CRT Blue in light mode and Retro Green in dark mode.
+- CRT Blue restores the nostalgic DOS blue background with white text.
+- CRT GitHub Light remains optional and uses the bundled GitHub Light High Contrast palette: white background, dark ink, blue links, and red errors, with a fine 3px CRT texture and gentle vignette.
 - Light mode preserves ANSI colors. Brightness and phosphor glow remain steady in both appearances. The IBM VGA font is shared across both appearances.
 - Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
