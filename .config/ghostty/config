@@ -14,17 +14,17 @@ background-opacity = 1
 background-blur = false
 
 custom-shader = shaders/block-cursor-halo.glsl
-# Analog jitter with subtle brightness flutter; occasional bursts and RGB bands.
-custom-shader = shaders/glitch-timed-color-v2.glsl
+# Subtle analog jitter; occasional bursts and RGB bands.
+custom-shader = shaders/glitch-steady-light.glsl
 # CRT scan lines and phosphor mask.
 custom-shader = shaders/crt-texture-v2.glsl
 # Bright monochrome text for the green and Ubuntu profiles.
 custom-shader = shaders/phosphor-vivid-v2.glsl
 custom-shader = shaders/crt-finish-v2.glsl
 # A 3px phosphor glow softens bright text and scanline gaps.
-custom-shader = shaders/phosphor-bloom-v3.glsl
+custom-shader = shaders/phosphor-bloom-steady.glsl
 # Flat final overlay keeps mouse coordinates aligned with text and tabs.
-custom-shader = shaders/crt-overlay-v5.glsl
+custom-shader = shaders/crt-overlay-steady.glsl
 custom-shader-animation = true
 
 # Merge tabs into the title bar when window decorations are enabled.

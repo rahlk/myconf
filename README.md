@@ -6,7 +6,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 
 - Local Ghostty follows the system appearance: CRT GitHub Light in light mode and Retro Green in dark mode.
 - CRT GitHub Light uses the bundled GitHub Light High Contrast palette: white background, dark ink, blue links, and red errors, with a fine 3px CRT texture and gentle vignette.
-- Light mode preserves ANSI colors and reduces the screen flicker to 15% of dark-mode amplitude. The IBM VGA font is shared across both appearances.
+- Light mode preserves ANSI colors. Brightness and phosphor glow remain steady in both appearances. The IBM VGA font is shared across both appearances.
 - Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
@@ -14,7 +14,6 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Local font: PxPlus IBM VGA 8x16 at size 16, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
 - Flat CRT screen with aligned mouse reporting, 6px Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom.
-- Rapid 26.3 Hz brightness flutter includes random variation at 54 samples per second, with brightness modulation bounded by ±4.4%. Phosphor glow intensity and spread vary in sync.
 - Background rings repeat every 3 physical pixels and are drawn in the final overlay with pixel filtering to reduce moiré.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
 - Slow continuous jitter drifts between random levels, capped at 0.2376 pixels. Bursts last 0.5 seconds at random 1–5 minute intervals.
@@ -41,12 +40,12 @@ The session ends square. Tab arrows join directly to the next segment without ba
 Only the seven active shaders are included, with stable filenames. Ghostty runs them in this order:
 
 1. `block-cursor-halo.glsl`
-2. `glitch-timed-color-v2.glsl`
+2. `glitch-steady-light.glsl`
 3. `crt-texture-v2.glsl`
 4. `phosphor-vivid-v2.glsl`
 5. `crt-finish-v2.glsl`
-6. `phosphor-bloom-v3.glsl`
-7. `crt-overlay-v5.glsl`
+6. `phosphor-bloom-steady.glsl`
+7. `crt-overlay-steady.glsl`
 
 ## Restore on macOS
 

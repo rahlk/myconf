@@ -131,10 +131,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // Limit only the continuous shimmer, before adding bursts and moving bands.
     float maxJitter = 0.2376 / iResolution.x;
     distortion = clamp(distortion, -maxJitter, maxJitter);
-    // Couple beam intensity to the continuous wobble, with a +/-2.5% limit.
-    // Capture it before bursts and bands so those cannot cause bright flashes.
-    float brightnessFlutter = 1.0 + 0.025 * (distortion / maxJitter) * bodyWeight;
-
     // Restore the original burst shake independently of the subtle shimmer.
     // Subtracting the baseline leaves 8*g*g + 0.3*g, which fades to zero.
     if (glitchAmount > 0.) {
@@ -173,5 +169,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col.r = textureLod(iChannel0, clamp(st + split, edge, vec2(1.0) - edge), 0.).r;
     col.g = textureLod(iChannel0, clamp(st, edge, vec2(1.0) - edge), 0.).g;
     col.b = textureLod(iChannel0, clamp(st - split, edge, vec2(1.0) - edge), 0.).b;
-    fragColor = vec4(col * brightnessFlutter, 1.);
+    fragColor = vec4(col, 1.);
 }

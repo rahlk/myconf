@@ -4,9 +4,6 @@ float ringPixelFilter(float phaseStep) {
     return abs(halfStep) < 0.0001 ? 1.0 : sin(halfStep) / halfStep;
 }
 
-float flickerRandom(float index, float seed) {
-    return fract(sin(index * 127.1 + seed) * 43758.5453);
-}
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord / iResolution.xy;
@@ -31,22 +28,4 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
                               : vec3(0.144, 0.0678, 0.0288);
         fragColor.rgb += ringColor * ring * radialFade * backgroundWeight;
     }
-    // Rapid tube-like flutter with random intensity, rather than isolated events.
-    // Keep the frequencies below typical refresh rates to avoid locking at 60 Hz.
-    float noiseTime = iTime * 54.0;
-    float noiseSlot = floor(noiseTime);
-    float noise = mix(flickerRandom(noiseSlot, 313.7),
-                      flickerRandom(noiseSlot + 1.0, 313.7),
-                      smoothstep(0.0, 1.0, fract(noiseTime))) * 2.0 - 1.0;
-    float strengthTime = iTime * 3.0;
-    float strengthSlot = floor(strengthTime);
-    float strength = mix(flickerRandom(strengthSlot, 47.1),
-                         flickerRandom(strengthSlot + 1.0, 47.1),
-                         smoothstep(0.0, 1.0, fract(strengthTime)));
-    float flutter = 0.024 * sin(6.28318530718 * 26.3 * iTime + noise * 0.5)
-                  + 0.020 * noise;
-    float flicker = 1.0 + flutter * mix(0.8, 1.0, strength);
-    // Keep white paper stable while retaining a faint light-mode flutter.
-    float backgroundLuminance = dot(iBackgroundColor, vec3(0.2126, 0.7152, 0.0722));
-    fragColor.rgb *= backgroundLuminance > 0.5 ? mix(1.0, flicker, 0.15) : flicker;
 }
