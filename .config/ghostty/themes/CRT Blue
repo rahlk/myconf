@@ -1,11 +1,11 @@
-# Nostalgic deep blue (RGB 14, 2, 130) with bright white text.
-background = #0e0282
+# Precompensated for CRT attenuation: target displayed blue near RGB 14, 2, 130.
+background = #0c01ab
 foreground = #ffffff
 bold-color = #ffffff
 font-style-bold = false
 font-style-bold-italic = false
 cursor-color = #ffffff
-cursor-text = #0e0282
+cursor-text = #0c01ab
 selection-background = #aaaaaa
 selection-foreground = #000000
 
@@ -13,7 +13,7 @@ palette = 0=#000000
 palette = 1=#aa0000
 palette = 2=#00aa00
 palette = 3=#aa5500
-palette = 4=#0e0282
+palette = 4=#0c01ab
 palette = 5=#aa00aa
 palette = 6=#00aaaa
 palette = 7=#ffffff
