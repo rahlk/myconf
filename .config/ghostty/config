@@ -14,8 +14,8 @@ background-opacity = 1
 background-blur = false
 
 custom-shader = shaders/block-cursor-halo.glsl
-# Gentle DOS CRT raster wobble with a single soft tracking band.
-custom-shader = shaders/dos-crt-wobble.glsl
+# Irregular held DOS CRT raster jitter with a single soft tracking band.
+custom-shader = shaders/dos-crt-jitter-v2.glsl
 # CRT scan lines and phosphor mask.
 custom-shader = shaders/crt-texture-v2.glsl
 # Bright monochrome text for the green and Ubuntu profiles.
