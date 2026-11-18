@@ -17,7 +17,7 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 - Flat CRT screen with aligned mouse reporting, 6px Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom.
 - Background rings repeat every 3 physical pixels and are drawn in the final overlay with pixel filtering to reduce moiré.
 - Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
-- Irregular DOS CRT raster jitter uses held random shifts at 30 updates per second, with occasional repeated samples and eighth-pixel steps capped at 0.5 physical pixels, with one occasional tracking band adding at most 0.35 pixels. Brightness stays steady; motion uses no RGB split or large glitch bursts.
+- Irregular DOS CRT raster jitter uses held random shifts at 18 updates per second, with occasional repeated samples and quarter-pixel steps capped at 1.25 physical pixels to remain visible through texture sampling, with one occasional tracking band adding at most 0.35 pixels. Brightness stays steady; motion uses no RGB split or large glitch bursts.
 - Curvature is disabled because shader warping does not remap mouse coordinates. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
 - One band moves from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
 - Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
@@ -41,7 +41,7 @@ The session ends square. Tab arrows join directly to the next segment without ba
 Only the seven active shaders are included, with stable filenames. Ghostty runs them in this order:
 
 1. `block-cursor-halo.glsl`
-2. `dos-crt-jitter-v2.glsl`
+2. `dos-crt-jitter-v3.glsl`
 3. `crt-texture-v2.glsl`
 4. `phosphor-vivid-v2.glsl`
 5. `crt-finish-v2.glsl`
