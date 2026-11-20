@@ -4,33 +4,29 @@ Personal terminal config for macOS and the Ubuntu SSH host.
 
 ## Terminal appearance
 
-- Local Ghostty follows the system appearance: CRT Blue in light mode and Retro Green in dark mode.
-- CRT Blue restores the nostalgic DOS blue background (input `#0C01AB`, compensated for CRT dimming to approach the reference RGB 14, 2, 130) with white text.
-- CRT GitHub Light remains optional and uses the bundled GitHub Light High Contrast palette: white background, dark ink, blue links, and red errors, with a fine 3px CRT texture and gentle vignette.
-- Light mode preserves ANSI colors. Brightness and phosphor glow remain steady in both appearances. The IBM VGA font is shared across both appearances.
-- Retro Paper remains an optional theme, with black text on a pale paper background (`#FAF9F6`).
+- Local Ghostty follows the system appearance: Retro Paper in light mode and Retro Green in dark mode.
+- Retro Paper inverts the green palette into near-black ink (`#030303`) on paper white (`#FDFDFD`). Both appearances apply the monochrome filter to application colors.
 - Retro Green uses vivid green text (`#39FF6A`) on an almost-black green background.
 - Local SSH profile: Retro Red phosphor, with the same global shaders.
 - The Ubuntu theme remains available as an optional orange palette.
 - Local font: PxPlus IBM VGA 8x16 at size 16, with Maple Mono NF for Nerd Font symbols.
 - Blinking underscore cursor.
-- Flat CRT screen with aligned mouse reporting, 6px Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom.
+- Subtle CRT curvature (`0.006`), Gaussian scan lines with wider bright beams, tightly spaced antialiased concentric background rings, and 3px phosphor bloom. Dark-theme scan lines have a 6px pitch; paper uses a finer 3px texture.
 - Background rings repeat every 3 physical pixels and are drawn in the final overlay with pixel filtering to reduce moiré.
-- Vignette strength: `0.10`. White text on blue uses a `2.0` shader gain, capped at display white.
-- Irregular DOS CRT raster jitter uses held random shifts at 18 updates per second, with occasional repeated samples and quarter-pixel steps capped at 1.25 physical pixels to remain visible through texture sampling, with one occasional tracking band adding at most 0.35 pixels. Brightness stays steady; motion uses no RGB split or large glitch bursts.
-- Curvature is disabled because shader warping does not remap mouse coordinates. Jitter stays zero in the top 96px to preserve mouse alignment with the top tabs.
-- One band moves from bottom to top at random 20–40 second intervals. Each band takes 1.5 seconds.
-- Zellij uses `crt-light` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames.
-- The light Zellij theme uses DOS blue and white, with gray menus and yellow selections. The green Powerline bar shows the session in green on black, gray tabs, a bright green active tab, then time and date.
-With CRT Blue, the session uses white text on teal, and the empty bar background is teal.
-The session ends square. Tab arrows join directly to the next segment without background gaps.
+- Vignette strength is `0.10` in dark mode and `0.035` on paper.
+- Smooth whole-screen horizontal drift reaches ±1.25 physical pixels, easing between random targets seven times per second. Row-level analog wobble remains capped at 0.1188px; rare half-second glitch bursts occur at random 1–5 minute intervals.
+- Original tracking distortion rolls downward every 20–40 seconds, taking 1.5 seconds per pass. RGB separation during tracking and bursts feeds into the monochrome filter.
+- Six soft brightness sweeps fit each tracking interval. Every sixth sweep shares the tracking band's start, vertical position, and speed, including the curvature mapping.
+- The brightness sweep darkens backgrounds by up to 7.2% on paper and 4.8% in dark mode. Separate whole-screen flicker is capped at 0.5% dimming (0.25% average).
+- Zellij uses `retro-paper` for light mode and `retro-green` for dark mode, with top tabs and rounded pane frames. Paper uses dark active frames and gray inactive frames.
+- The green Powerline bar shows the session, tabs, time, and date. The session ends square; tab arrows join directly to the next segment without background gaps.
 
 ## Files
 
 | Path | Purpose |
 | --- | --- |
 | `.zshrc.macos` | macOS Zsh config with credentials removed |
-| `.config/ghostty/` | Ghostty config, seven active shaders, palettes, and SSH launcher |
+| `.config/ghostty/` | Ghostty config, one CRT source bundle, pass builder, palettes, and SSH launcher |
 | `.config/zellij/` | Local Zellij config, themes, layout, and zjstatus plugin |
 | `.local/share/fonts/DepartureMono/` | Departure Mono 1.500 and its license |
 | `macos/zellij-auto-attach.zsh` | Host-aware Zsh auto-attach block for local Zellij sessions |
@@ -38,22 +34,33 @@ The session ends square. Tab arrows join directly to the next segment without ba
 | `remote/.config/zellij/` | Orange SSH theme and bottom tab-bar layout |
 | `remote/ssh-zellij.zsh` | Remote Zsh auto-start block for local and SSH Zellij sessions |
 
-Only the seven active shaders are included, with stable filenames. Ghostty runs them in this order:
+All eight effects live in `.config/ghostty/shaders/crt.glsl`. The `reload-shader` script selects each `CRT_PASS` at compile time and generates eight cached shader inputs in this order:
 
-1. `block-cursor-halo.glsl`
-2. `dos-crt-jitter-v3.glsl`
-3. `crt-texture-v2.glsl`
-4. `phosphor-vivid-v2.glsl`
-5. `crt-finish-v2.glsl`
-6. `phosphor-bloom-steady.glsl`
-7. `crt-overlay-steady.glsl`
+1. Block-cursor halo and trail
+2. Analog drift, tracking distortion, and rare bursts
+3. CRT texture and horizontal softening
+4. Green/red phosphor or inverted paper monochrome
+5. Scan lines and vignette
+6. Phosphor bloom
+7. Subtle curvature
+8. Background rings, synchronized brightness sweeps, and flicker
+
+The eight GPU passes keep their intermediate textures, preserving the original rendering cost. Generated cache files are rebuilt from the source bundle and are not versioned.
 
 ## Restore on macOS
 
-Copy the shaders, themes, and SSH launcher from `.config/ghostty/` into `~/.config/ghostty/`.
+Copy `.config/ghostty/`, including `reload-shader`, into `~/.config/ghostty/`.
 The repository and current installation both use the filename `config`.
 Copy the repository config into the active Ghostty config file.
 Avoid conflicting copies of `config` and `config.ghostty`.
+
+Then build the shader passes and reload Ghostty:
+
+```sh
+~/.config/ghostty/reload-shader
+```
+
+This regenerates the cache paths recorded in `config` for the current machine. The copied config's cache paths must be rebuilt before using it on another machine or after clearing the shader cache.
 
 Copy `.config/zellij/` into `~/.config/zellij/`.
 Copy `.zshrc.macos` to `~/.zshrc` for the full macOS shell config.
@@ -73,9 +80,7 @@ Enable its Cmd+Shift+T shortcut in macOS Keyboard settings under Services.
 The launcher creates a separate SSH window because borderless windows cannot host native tabs reliably.
 The local files contain personal paths under `/Users/rkrsn` and the `stagger-juice` SSH destination.
 
-Reload Ghostty after applying the files.
-For later shader edits, change the configured shader filename to force a rebuild in Ghostty 1.3.1.
-A reload with the same filename can reuse a cached shader build.
+After editing `shaders/crt.glsl`, run `~/.config/ghostty/reload-shader` again. It creates versioned cache paths, validates the config, and reloads Ghostty. An ordinary config reload uses the last generated shader passes.
 
 ## Rebuild the tab bar plugin
 

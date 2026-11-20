@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""Build the single CRT source into its original GPU passes and reload Ghostty."""
+import argparse
+import hashlib
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--no-reload', action='store_true', help='Build and validate without reloading Ghostty')
+args = parser.parse_args()
+root = Path(__file__).resolve().parent
+source = (root / 'shaders/crt.glsl').read_bytes()
+passes = re.findall(rb'^#if CRT_PASS == (\d+)$', source, re.M)
+if passes != [str(index).encode() for index in range(8)]:
+    raise SystemExit('Expected eight CRT_PASS sections numbered 0 through 7.')
+
+cache_base = Path(os.environ.get('XDG_CACHE_HOME', str(Path.home() / 'Library/Caches')))
+digest = hashlib.sha256(b'ghostty-crt-eight-pass-v1\0' + source).hexdigest()[:16]
+cache = cache_base / 'ghostty-crt' / digest
+cache.mkdir(parents=True, exist_ok=True)
+outputs = []
+for index in range(8):
+    output = cache / f'pass-{index}.glsl'
+    content = f'#define CRT_PASS {index}\n'.encode() + source
+    if not output.exists() or output.read_bytes() != content:
+        output.write_bytes(content)
+    outputs.append(output)
+
+config_path = root / 'config'
+original = config_path.read_text()
+heading = '# Generated from shaders/crt.glsl by ./reload-shader.\n'
+heading += '# Eight real passes preserve the original appearance and GPU cost.\n'
+working = original.replace(heading, '')
+start = working.index('custom-shader = ')
+end = working.index('custom-shader-animation = ', start)
+block = heading
+block += ''.join(f'custom-shader = {output}\n' for output in outputs)
+updated = working[:start] + block + working[end:]
+ghostty = shutil.which('ghostty') or '/Applications/Ghostty.app/Contents/MacOS/ghostty'
+config_path.write_text(updated)
+try:
+    subprocess.run([ghostty, '+validate-config'], check=True)
+except BaseException:
+    config_path.write_text(original)
+    raise
+print('Built and validated eight GPU passes from shaders/crt.glsl.')
+if not args.no_reload:
+    subprocess.run(['osascript', '-e', '''with timeout of 15 seconds
+if application "Ghostty" is running then
+    tell application "Ghostty"
+        if (count of terminals) > 0 then
+            set targetTerminal to first terminal
+            perform action "reload_config" on targetTerminal
+        end if
+    end tell
+end if
+end timeout'''], check=True)
+    print('Reloaded Ghostty.')

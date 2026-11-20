@@ -1,29 +1,28 @@
-# Black ink on subtly warm white paper, matching the Retro Green CRT setup.
-background = #faf9f6
-foreground = #171717
-# Darker ink provides bold emphasis without thickening the bitmap glyphs.
+# Inverted Retro Green: monochrome ink on near-white paper.
+background = #fdfdfd
+foreground = #030303
 bold-color = #000000
 font-style-bold = false
 font-style-bold-italic = false
-cursor-color = #171717
-cursor-text = #faf9f6
-selection-background = #d4d2ca
-selection-foreground = #000000
+cursor-color = #030303
+cursor-text = #fdfdfd
+selection-background = #b4b4b4
+selection-foreground = #030303
 
-# ANSI black is the paper surface; bright black is the muted Powerline fill.
-palette = 0=#faf9f6
-palette = 1=#646464
-palette = 2=#2d2d2d
-palette = 3=#3b3b3b
-palette = 4=#686868
-palette = 5=#515151
-palette = 6=#333333
-palette = 7=#383838
-palette = 8=#d4d2ca
-palette = 9=#4c4c4c
-palette = 10=#171717
-palette = 11=#0f0f0f
-palette = 12=#454545
-palette = 13=#2f2f2f
-palette = 14=#242424
-palette = 15=#000000
+# ANSI brightness levels mirror the green phosphor palette.
+palette = 0=#f7f7f7
+palette = 1=#777777
+palette = 2=#292929
+palette = 3=#272727
+palette = 4=#777777
+palette = 5=#4a4a4a
+palette = 6=#292929
+palette = 7=#232323
+palette = 8=#9b9b9b
+palette = 9=#454545
+palette = 10=#030303
+palette = 11=#030303
+palette = 12=#3b3b3b
+palette = 13=#222222
+palette = 14=#030303
+palette = 15=#030303

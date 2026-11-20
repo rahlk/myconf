@@ -1,5 +1,5 @@
 # Follow the system appearance with matching CRT palettes.
-theme = light:CRT Blue,dark:Retro Green
+theme = light:Retro Paper,dark:Retro Green
 
 cursor-style = underline
 cursor-style-blink = true
@@ -13,18 +13,16 @@ font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFD=Maple Mono NF
 background-opacity = 1
 background-blur = false
 
-custom-shader = shaders/block-cursor-halo.glsl
-# Irregular held DOS CRT raster jitter with a single soft tracking band.
-custom-shader = shaders/dos-crt-jitter-v3.glsl
-# CRT scan lines and phosphor mask.
-custom-shader = shaders/crt-texture-v2.glsl
-# Bright monochrome text for the green and Ubuntu profiles.
-custom-shader = shaders/phosphor-vivid-v2.glsl
-custom-shader = shaders/crt-finish-v2.glsl
-# A 3px phosphor glow softens bright text and scanline gaps.
-custom-shader = shaders/phosphor-bloom-steady.glsl
-# Flat final overlay keeps mouse coordinates aligned with text and tabs.
-custom-shader = shaders/crt-overlay-steady.glsl
+# Generated from shaders/crt.glsl by ./reload-shader.
+# Eight real passes preserve the original appearance and GPU cost.
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-0.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-1.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-2.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-3.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-4.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-5.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-6.glsl
+custom-shader = /Users/rkrsn/Library/Caches/ghostty-crt/55d8df346486db20/pass-7.glsl
 custom-shader-animation = true
 
 # Merge tabs into the title bar when window decorations are enabled.
